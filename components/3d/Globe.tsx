@@ -127,7 +127,7 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
     const mat = new THREE.LineBasicMaterial({
       color: color,
       transparent: true,
-      opacity: isActive ? 0.7 : 0.15, // Dim inactive paths
+      opacity: isActive ? 0.75 : 0.18, // Dim inactive paths
     });
     return new THREE.Line(geom, mat);
   }, [points, color, isActive]);
@@ -273,9 +273,8 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
   }, []);
 
   // Load high-quality realistic satellite Earth textures & translucent cloud textures
-  const [earthTexture, bumpMap, cloudsTexture] = useTexture([
+  const [earthTexture, cloudsTexture] = useTexture([
     "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-    "https://unpkg.com/three-globe/example/img/earth-topology.png",
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png"
   ]);
 
@@ -337,6 +336,52 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     });
   }, []);
 
+  // Custom high-contrast shader material to map the satellite landmasses cleanly and sharply
+  // Land: #FFFFFF (White) | Ocean: #EFF6FF (Super clean light blue-slate)
+  const earthShaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uEarthMap: { value: earthTexture },
+        uOceanColor: { value: new THREE.Color("#F1F5F9") }, // Light blue-slate ocean
+        uLandColor: { value: new THREE.Color("#FFFFFF") },  // Clean white land
+        uLightDirection: { value: new THREE.Vector3(5, 3, 5).normalize() }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D uEarthMap;
+        uniform vec3 uOceanColor;
+        uniform vec3 uLandColor;
+        uniform vec3 uLightDirection;
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        
+        void main() {
+          vec4 texColor = texture2D(uEarthMap, vUv);
+          // Segment oceans (very low red channel) from lands (high red channel)
+          float isOcean = step(texColor.r, 0.12);
+          
+          vec3 baseColor = mix(uLandColor, uOceanColor, isOcean);
+          
+          // Lambertian diffuse shading
+          vec3 normal = normalize(vNormal);
+          float diffuse = max(dot(normal, uLightDirection), 0.1);
+          
+          // Smooth color shading with ambient glow
+          vec3 finalColor = baseColor * (diffuse * 0.75 + 0.35);
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `
+    });
+  }, [earthTexture]);
+
   return (
     <group ref={globeGroupRef}>
       {/* Outer ambient golden sparkles */}
@@ -344,24 +389,17 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
 
       {/* 1. Atmospheric Glow Halo (Spaceedu style vibrant Fresnel glow) */}
       <mesh material={atmosphereMaterial}>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.12, 64, 64]} />
+        <sphereGeometry args={[GLOBE_RADIUS + 0.08, 64, 64]} />
       </mesh>
 
-      {/* 2. Realistic 3D Satellite Earth Globe Sphere */}
-      <mesh castShadow receiveShadow>
+      {/* 2. Realistic 3D Satellite Earth Globe Sphere (Custom high-contrast white lands) */}
+      <mesh castShadow receiveShadow material={earthShaderMaterial}>
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
-        <meshStandardMaterial
-          map={earthTexture}
-          bumpMap={bumpMap}
-          bumpScale={0.05}
-          roughness={0.45} // Ocean specular reflections
-          metalness={0.12}
-        />
       </mesh>
 
       {/* 3. Dynamic Rotating Clouds Layer */}
       <mesh ref={cloudsRef}>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.025, 64, 64]} />
+        <sphereGeometry args={[GLOBE_RADIUS + 0.02, 64, 64]} />
         <meshStandardMaterial
           map={cloudsTexture}
           transparent
