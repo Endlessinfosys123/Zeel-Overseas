@@ -3,7 +3,7 @@
 import React, { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { Sparkles } from "@react-three/drei";
+import { Sparkles, useTexture } from "@react-three/drei";
 
 // Target countries with coordinates
 const destinations = [
@@ -266,112 +266,11 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     }));
   }, []);
 
-  // Dynamically generate a high-detail cartographic world map texture
-  const earthTexture = useMemo(() => {
-    if (typeof window === "undefined") return null;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = 2048;
-    canvas.height = 1024;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
-
-    // 1. Fill ocean (light off-white background matching site theme)
-    ctx.fillStyle = "#FAFAF8";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 2. Draw global grid lines (latitude & longitude) for cartographic map feel
-    ctx.strokeStyle = "rgba(37, 99, 235, 0.08)";
-    ctx.lineWidth = 1;
-    
-    // Latitudes
-    for (let lat = -80; lat <= 80; lat += 15) {
-      const y = ((90 - lat) / 180) * canvas.height;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(canvas.width, y);
-      ctx.stroke();
-    }
-    // Longitudes
-    for (let lon = -180; lon < 180; lon += 15) {
-      const x = ((lon + 180) / 360) * canvas.width;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, canvas.height);
-      ctx.stroke();
-    }
-
-    // 3. Setup continent styles
-    ctx.fillStyle = "#EAE8E2"; // Soft warm-grey landmasses
-    ctx.strokeStyle = "#D4AF37"; // Passport Gold borders
-    ctx.lineWidth = 1.5;
-
-    const mapLon = (lon: number) => ((lon + 180) / 360) * canvas.width;
-    const mapLat = (lat: number) => ((90 - lat) / 180) * canvas.height;
-
-    const drawContinent = (points: [number, number][]) => {
-      ctx.beginPath();
-      points.forEach(([lat, lon], idx) => {
-        const x = mapLon(lon);
-        const y = mapLat(lat);
-        if (idx === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    };
-
-    // North America (High detail outline)
-    drawContinent([
-      [75, -165], [83, -120], [83, -80], [75, -60], [60, -50], [50, -45],
-      [45, -60], [30, -80], [25, -75], [20, -75], [15, -83], [10, -83],
-      [10, -90], [15, -95], [20, -105], [30, -115], [32, -113], [32, -120],
-      [45, -125], [55, -130], [60, -145], [60, -165], [70, -168]
-    ]);
-
-    // Greenland
-    drawContinent([
-      [80, -60], [83, -40], [75, -20], [65, -30], [60, -45], [70, -60]
-    ]);
-
-    // South America (High detail outline)
-    drawContinent([
-      [12, -72], [10, -60], [5, -50], [-5, -35], [-8, -35], [-20, -40],
-      [-40, -60], [-55, -68], [-55, -72], [-45, -75], [-40, -70], [-30, -73],
-      [-20, -80], [-10, -80], [0, -80], [5, -78]
-    ]);
-
-    // Africa (High detail outline)
-    drawContinent([
-      [37, 12], [32, 32], [30, 34], [25, 34], [15, 40], [12, 43], [12, 50],
-      [5, 45], [-15, 40], [-30, 30], [-34, 18], [-30, 15], [-15, 10], [5, 10],
-      [5, -8], [15, -17], [30, -10], [35, -6], [35, 10]
-    ]);
-
-    // Europe & Asia / Eurasia (High detail outline)
-    drawContinent([
-      [70, -10], [72, 15], [72, 30], [68, 40], [70, 60], [75, 80], [78, 110],
-      [75, 130], [77, 140], [70, 160], [70, 170], [60, 170], [50, 140], [40, 120],
-      [30, 120], [20, 115], [15, 110], [10, 105], [15, 95], [20, 95], [20, 85],
-      [22, 88], [25, 88], [25, 68], [20, 70], [10, 75], [13, 75], [12, 45],
-      [25, 45], [30, 35], [35, 40], [30, 15], [45, 15], [50, -10]
-    ]);
-
-    // India Highlighted
-    drawContinent([
-      [25, 68], [25, 88], [22, 88], [20, 80], [10, 78],
-      [8, 77], [13, 75], [20, 70]
-    ]);
-
-    // Australia (High detail outline)
-    drawContinent([
-      [-15, 113], [-11, 136], [-15, 143], [-20, 148], [-33, 151], [-38, 146],
-      [-35, 115], [-20, 113]
-    ]);
-
-    return new THREE.CanvasTexture(canvas);
-  }, []);
+  // Load high-quality realistic satellite Earth textures
+  const [earthTexture, bumpMap] = useTexture([
+    "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+    "https://unpkg.com/three-globe/example/img/earth-topology.png"
+  ]);
 
   // Align a ring normal flat against the sphere's surface at Ahmedabad
   const ringQuaternion = useMemo(() => {
@@ -418,18 +317,16 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
         />
       </mesh>
 
-      {/* 2. Detailed 3D Cartographic Earth Globe Sphere */}
+      {/* 2. Realistic 3D Satellite Earth Globe Sphere */}
       <mesh castShadow receiveShadow>
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
-        {earthTexture ? (
-          <meshStandardMaterial
-            map={earthTexture}
-            roughness={0.7}
-            metalness={0.15}
-          />
-        ) : (
-          <meshStandardMaterial color="#FAFAF8" roughness={0.8} />
-        )}
+        <meshStandardMaterial
+          map={earthTexture}
+          bumpMap={bumpMap}
+          bumpScale={0.04}
+          roughness={0.6}
+          metalness={0.15}
+        />
       </mesh>
 
       {/* 3. Subtle outer blueprint grid lines */}
@@ -439,7 +336,7 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
           color="#2563EB"
           wireframe
           transparent
-          opacity={0.05}
+          opacity={0.04}
         />
       </mesh>
 
