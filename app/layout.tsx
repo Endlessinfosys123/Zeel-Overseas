@@ -8,6 +8,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import Preloader from "@/components/ui/Preloader";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import GlobalBackground from "@/components/ui/GlobalBackground";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -51,9 +52,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} scroll-smooth`}>
-      <body className="bg-brand-offwhite text-brand-charcoal min-h-screen flex flex-col antialiased">
+      <body className="bg-white text-brand-charcoal min-h-screen flex flex-col antialiased">
         {/* Grain Noise Overlay for Tactile Premium Feeling */}
         <div className="noise-overlay" aria-hidden="true" />
+        
+        {/* Global Animated Background — visa/travel themed floating elements */}
+        <GlobalBackground />
         
         {/* Animated Custom Cursor (Spring enabled) */}
         <CustomCursor />

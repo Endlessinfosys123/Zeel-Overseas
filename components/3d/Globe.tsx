@@ -149,11 +149,10 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
   // Create custom shader uniforms
   const uniforms = useMemo(() => {
     return {
-      uColor: { value: new THREE.Color(color) },
       uProgress: { value: 0.0 },
       uIsActive: { value: 0.0 }
     };
-  }, [color]);
+  }, []);
 
   // Update uniforms and plane position
   useFrame(() => {
@@ -194,7 +193,6 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
             }
           `}
           fragmentShader={`
-            uniform vec3 uColor;
             uniform float uProgress;
             uniform float uIsActive;
             varying vec2 vUv;
@@ -208,14 +206,19 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
               // Fade out route line slightly at the start
               float alpha = smoothstep(0.0, 0.15, vUv.x);
               
+              // Cyan to Yellow gradient along the flight path
+              vec3 startColor = vec3(0.0, 0.95, 1.0); // Cyan
+              vec3 endColor = vec3(1.0, 0.85, 0.0);   // Yellow
+              vec3 baseColor = mix(startColor, endColor, vUv.x);
+              
               // If active, add an emissive neon glow that gets brighter near the plane tip
               float glow = 0.0;
               if (uIsActive > 0.5) {
-                glow = pow(vUv.x / uProgress, 6.0) * 1.5;
+                glow = pow(vUv.x / uProgress, 6.0) * 1.8;
               }
               
-              vec3 glowColor = uColor * (1.0 + glow);
-              float finalAlpha = uIsActive > 0.5 ? (alpha * 0.85) : 0.18;
+              vec3 glowColor = baseColor * (1.0 + glow);
+              float finalAlpha = uIsActive > 0.5 ? (alpha * 0.9) : 0.22;
               
               gl_FragColor = vec4(glowColor, finalAlpha);
             }
@@ -418,8 +421,11 @@ export const Globe: React.FC<GlobeProps> = ({
   }, []);
 
   // Load high-quality realistic satellite Earth textures & translucent cloud textures
-  const [earthTexture, cloudsTexture] = useTexture([
+  const [earthTexture, bumpMap, nightTexture, specularMap, cloudsTexture] = useTexture([
     "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+    "https://unpkg.com/three-globe/example/img/earth-topology.png",
+    "https://unpkg.com/three-globe/example/img/earth-night.jpg",
+    "https://unpkg.com/three-globe/example/img/earth-water.png",
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png"
   ]);
 
@@ -452,14 +458,44 @@ export const Globe: React.FC<GlobeProps> = ({
     );
   };
 
-  // Custom high-contrast Day/Night Earth Shader with Specular Oceans
+  // Atmosphere Shader definition (Spaceedu Fresnel atmosphere glow style)
+  const atmosphereMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        color: { value: new THREE.Color("#00d2ff") } // Vibrant cyan-blue glow
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        uniform vec3 color;
+        void main() {
+          // Fresnel calculation
+          float intensity = pow(0.75 - dot(vNormal, vec3(0, 0, 1.0)), 2.5);
+          gl_FragColor = vec4(color, 1.0) * intensity;
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+  }, []);
+
+  // Custom photorealistic Day/Night Earth Shader with Specular Oceans and Bump Terrain
   const earthShaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         uDayMap: { value: earthTexture },
-        uLightDirection: { value: new THREE.Vector3(5, 3, 5).normalize() },
-        uOceanColor: { value: new THREE.Color("#F1F5F9") },
-        uLandColor: { value: new THREE.Color("#FFFFFF") }
+        uNightMap: { value: nightTexture },
+        uBumpMap: { value: bumpMap },
+        uSpecularMap: { value: specularMap },
+        uLightDirection: { value: new THREE.Vector3(5, 3, 5).normalize() }
       },
       vertexShader: `
         varying vec2 vUv;
@@ -475,38 +511,45 @@ export const Globe: React.FC<GlobeProps> = ({
       `,
       fragmentShader: `
         uniform sampler2D uDayMap;
+        uniform sampler2D uNightMap;
+        uniform sampler2D uBumpMap;
+        uniform sampler2D uSpecularMap;
         uniform vec3 uLightDirection;
-        uniform vec3 uOceanColor;
-        uniform vec3 uLandColor;
         varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vViewPosition;
         
         void main() {
           vec4 dayColor = texture2D(uDayMap, vUv);
+          vec4 nightColor = texture2D(uNightMap, vUv);
+          vec4 bumpColor = texture2D(uBumpMap, vUv);
+          vec4 specColor = texture2D(uSpecularMap, vUv);
           
           vec3 normal = normalize(vNormal);
+          float bumpScale = 0.04;
+          normal = normalize(normal + vec3(bumpColor.r * bumpScale));
+          
           float dotNL = dot(normal, uLightDirection);
+          float dayIntensity = smoothstep(-0.2, 0.2, dotNL);
           
-          // Segment oceans (low red) from lands (high red)
-          float isOcean = step(dayColor.r, 0.12);
-          vec3 baseColor = mix(uLandColor, uOceanColor, isOcean);
-          
-          // Specular highlights only on water
+          // Specular highlights only on water using satellite specular mask
+          float specularMask = specColor.r;
           vec3 viewDir = normalize(vViewPosition);
           vec3 halfDir = normalize(uLightDirection + viewDir);
           float specAngle = max(dot(normal, halfDir), 0.0);
-          float specular = pow(specAngle, 16.0) * isOcean * 0.45;
+          float specular = pow(specAngle, 32.0) * specularMask * 0.65;
           
-          // Lambertian shading
-          float diffuse = max(dotNL, 0.1);
-          vec3 shadedColor = baseColor * (diffuse * 0.75 + 0.35) + vec3(specular);
+          // Render actual satellite color
+          vec3 dayColorShaded = dayColor.rgb + vec3(specular);
+          vec3 finalDay = dayColorShaded * max(dotNL, 0.0);
+          vec3 finalNight = nightColor.rgb * (1.0 - dayIntensity) * 0.95;
           
-          gl_FragColor = vec4(shadedColor, 1.0);
+          vec3 finalColor = mix(finalNight, finalDay + dayColor.rgb * 0.08, dayIntensity);
+          gl_FragColor = vec4(finalColor, 1.0);
         }
       `
     });
-  }, [earthTexture]);
+  }, [earthTexture, nightTexture, bumpMap, specularMap]);
 
   return (
     <group>
@@ -517,7 +560,12 @@ export const Globe: React.FC<GlobeProps> = ({
         {/* Outer ambient golden sparkles */}
         <Sparkles count={isMobile ? 15 : 40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
 
-        {/* 1. Realistic 3D Satellite Earth Globe Sphere */}
+        {/* 1. Atmospheric Glow Halo (Spaceedu style vibrant Fresnel glow) */}
+        <mesh material={atmosphereMaterial}>
+          <sphereGeometry args={[GLOBE_RADIUS + 0.08, 64, 64]} />
+        </mesh>
+
+        {/* 2. Realistic 3D Satellite Earth Globe Sphere (Custom Day/Night + Specular + Bump Shader) */}
         <mesh 
           castShadow 
           receiveShadow 
@@ -534,7 +582,7 @@ export const Globe: React.FC<GlobeProps> = ({
           <sphereGeometry args={[GLOBE_RADIUS, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
         </mesh>
 
-        {/* 2. Dynamic Rotating Clouds Layer */}
+        {/* 3. Dynamic Rotating Clouds Layer */}
         <mesh ref={cloudsRef}>
           <sphereGeometry args={[GLOBE_RADIUS + 0.025, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
           <meshStandardMaterial
@@ -545,16 +593,16 @@ export const Globe: React.FC<GlobeProps> = ({
           />
         </mesh>
 
-        {/* 3. Ahmedabad Base Pin (Globe Origin) */}
+        {/* 4. Ahmedabad Base Pin (Globe Origin) */}
         <mesh position={ahmedabadPos}>
           <sphereGeometry args={[0.11, 16, 16]} />
           <meshBasicMaterial color="#2563EB" />
         </mesh>
 
-        {/* 4. Ahmedabad Pulse Rings */}
+        {/* 5. Ahmedabad Pulse Rings */}
         <AhmedabadPulse />
 
-        {/* 5. Destination Pins & Animated Curved Flight Paths */}
+        {/* 6. Destination Pins & Animated Curved Flight Paths */}
         {destinationVectors.map((dest, idx) => (
           <group key={idx}>
             {/* Target Country destination pin */}

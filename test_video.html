@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { margin: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #fff; font-family: sans-serif; }
+    video { max-width: 90%; max-height: 80vh; border: 2px solid #555; }
+    .controls { margin-top: 10px; display: flex; gap: 10px; }
+    button { padding: 8px 16px; background: #333; color: #fff; border: 1px solid #777; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1 id="title">Video Player</h1>
+  <video id="v" controls>
+    <source src="Travel_map_animation_Ahmedabad_t…_202607032021.mp4" type="video/mp4">
+  </video>
+  <div class="controls">
+    <button id="btn1" onclick="playVideo('Travel_map_animation_Ahmedabad_t…_202607032021.mp4')">Video 1</button>
+    <button id="btn2" onclick="playVideo('Travel_map_animation_Ahmedabad_t…_202607032021_2.mp4')">Video 2</button>
+    <button id="seek1" onclick="setTime(1)">Seek 1s</button>
+    <button id="seek3" onclick="setTime(3)">Seek 3s</button>
+    <button id="seek5" onclick="setTime(5)">Seek 5s</button>
+  </div>
+  <script>
+    const v = document.getElementById('v');
+    function playVideo(src) {
+      document.getElementById('title').innerText = src;
+      v.src = src;
+      v.load();
+      v.play();
+    }
+    function setTime(sec) {
+      v.currentTime = sec;
+    }
+  </script>
+</body>
+</html>
