@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useMemo, useState, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { Sparkles, useTexture } from "@react-three/drei";
 
@@ -127,7 +127,7 @@ interface FlightPathProps {
 // Renders the curved flight route + the flying 3D airplane + jet trails
 const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, progress }) => {
   const planeRef = useRef<THREE.Group>(null);
-  const lineRef = useRef<THREE.Line>(null);
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   // Generate Bezier curve
   const curve = useMemo(() => {
@@ -140,30 +140,26 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
     return new THREE.QuadraticBezierCurve3(start, midPoint, end);
   }, [start, end]);
 
-  const points = useMemo(() => curve.getPoints(50), [curve]);
+  // Create Tube Geometry along the Bezier curve
+  const tubeGeometry = useMemo(() => {
+    // Segmentation: 64 segments along path, radius: 0.014, radial segments: 6
+    return new THREE.TubeGeometry(curve, 64, 0.014, 6, false);
+  }, [curve]);
 
-  // Create curve visual line
-  const lineObj = useMemo(() => {
-    const geom = new THREE.BufferGeometry().setFromPoints(points);
-    const mat = new THREE.LineBasicMaterial({
-      color: color,
-      transparent: true,
-      opacity: isActive ? 0.95 : 0.22, // High contrast visibility
-    });
-    return new THREE.Line(geom, mat);
-  }, [points, color, isActive]);
+  // Create custom shader uniforms
+  const uniforms = useMemo(() => {
+    return {
+      uColor: { value: new THREE.Color(color) },
+      uProgress: { value: 0.0 },
+      uIsActive: { value: 0.0 }
+    };
+  }, [color]);
 
-  // Dynamically update line points for the active drawing path
+  // Update uniforms and plane position
   useFrame(() => {
-    if (lineRef.current) {
-      if (isActive) {
-        const activePointsCount = Math.max(2, Math.floor(progress * points.length));
-        const activePoints = points.slice(0, activePointsCount);
-        lineRef.current.geometry.setFromPoints(activePoints);
-      } else {
-        // Reset full path for static lines
-        lineRef.current.geometry.setFromPoints(points);
-      }
+    if (materialRef.current) {
+      materialRef.current.uniforms.uProgress.value = isActive ? progress : 1.0;
+      materialRef.current.uniforms.uIsActive.value = isActive ? 1.0 : 0.0;
     }
 
     if (isActive && planeRef.current) {
@@ -183,8 +179,49 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
 
   return (
     <group>
-      {/* Flight Arc Line */}
-      <primitive ref={lineRef} object={lineObj} />
+      {/* Flight Arc Tube Mesh with Neon Shader */}
+      <mesh geometry={tubeGeometry}>
+        <shaderMaterial
+          ref={materialRef}
+          transparent
+          depthWrite={false}
+          uniforms={uniforms}
+          vertexShader={`
+            varying vec2 vUv;
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `}
+          fragmentShader={`
+            uniform vec3 uColor;
+            uniform float uProgress;
+            uniform float uIsActive;
+            varying vec2 vUv;
+            
+            void main() {
+              // Discard pixels beyond the airplane progress when active
+              if (uIsActive > 0.5 && vUv.x > uProgress) {
+                discard;
+              }
+              
+              // Fade out route line slightly at the start
+              float alpha = smoothstep(0.0, 0.15, vUv.x);
+              
+              // If active, add an emissive neon glow that gets brighter near the plane tip
+              float glow = 0.0;
+              if (uIsActive > 0.5) {
+                glow = pow(vUv.x / uProgress, 6.0) * 1.5;
+              }
+              
+              vec3 glowColor = uColor * (1.0 + glow);
+              float finalAlpha = uIsActive > 0.5 ? (alpha * 0.85) : 0.18;
+              
+              gl_FragColor = vec4(glowColor, finalAlpha);
+            }
+          `}
+        />
+      </mesh>
 
       {/* Traveling 3D Jet Airplane - Only rendered on active route */}
       {isActive && (
@@ -203,12 +240,76 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
   );
 };
 
+interface CameraControllerProps {
+  activeIdx: number;
+  progress: number;
+  elapsedTime: number;
+}
+
+// Controls camera position and zoom transitions dynamically for cinematic zoom sweeps
+const CameraController: React.FC<CameraControllerProps> = ({ activeIdx, progress, elapsedTime }) => {
+  const { camera } = useThree();
+  const ahmedabadPos = useMemo(() => latLonToVector3(AHMEDABAD.lat, AHMEDABAD.lon, GLOBE_RADIUS), []);
+  const currentLookAtRef = useRef(new THREE.Vector3(0, 0, 0));
+
+  const destPos = useMemo(() => {
+    const dest = destinations[activeIdx];
+    return latLonToVector3(dest.lat, dest.lon, GLOBE_RADIUS);
+  }, [activeIdx]);
+
+  useFrame(() => {
+    const targetLookAt = new THREE.Vector3(0, 0, 0);
+    const targetCamPos = new THREE.Vector3(0, 0, 5.8);
+
+    if (elapsedTime <= 1.5) {
+      // Phase 1: Wide view, globe rotates to face active route
+      targetCamPos.set(0, 0, 5.8);
+      targetLookAt.set(0, 0, 0);
+    } else if (elapsedTime > 1.5 && elapsedTime <= 5.0) {
+      // Phase 2: Zoom in and follow the airplane flying
+      const currentRoutePos = new THREE.Vector3().lerpVectors(ahmedabadPos, destPos, progress);
+      targetLookAt.copy(currentRoutePos);
+      
+      const cameraDir = currentRoutePos.clone().normalize();
+      targetCamPos.copy(currentRoutePos).add(cameraDir.multiplyScalar(1.8)); // Close follow distance
+    } else if (elapsedTime > 5.0 && elapsedTime <= 7.0) {
+      // Phase 3: Lock on destination and zoom in close upon arrival
+      targetLookAt.copy(destPos);
+      const cameraDir = destPos.clone().normalize();
+      targetCamPos.copy(destPos).add(cameraDir.multiplyScalar(1.4)); // Closer look on arrival
+    } else {
+      // Phase 4: Zoom back out wide to transition
+      const t = (elapsedTime - 7.0) / 1.0;
+      const currentRoutePos = new THREE.Vector3().lerpVectors(destPos, new THREE.Vector3(0, 0, 0), t);
+      targetLookAt.copy(currentRoutePos);
+      
+      const startCam = destPos.clone().add(destPos.clone().normalize().multiplyScalar(1.4));
+      const endCam = new THREE.Vector3(0, 0, 5.8);
+      targetCamPos.lerpVectors(startCam, endCam, t);
+    }
+
+    // Smoothly LERP camera position
+    camera.position.lerp(targetCamPos, 0.05);
+    
+    // Smoothly LERP camera lookAt target
+    currentLookAtRef.current.lerp(targetLookAt, 0.05);
+    camera.lookAt(currentLookAtRef.current);
+  });
+
+  return null;
+};
+
 interface GlobeProps {
   onActiveIndexChange: (idx: number) => void;
   onProgressChange: (p: number) => void;
+  onShowCardChange: (show: boolean) => void;
 }
 
-export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressChange }) => {
+export const Globe: React.FC<GlobeProps> = ({ 
+  onActiveIndexChange, 
+  onProgressChange,
+  onShowCardChange 
+}) => {
   const globeGroupRef = useRef<THREE.Group>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
   const ahmedabadPos = useMemo(() => latLonToVector3(AHMEDABAD.lat, AHMEDABAD.lon, GLOBE_RADIUS), []);
@@ -229,11 +330,13 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
   const stateRef = useRef({
     activeIdx: 0,
     elapsedTime: 0,
-    cycleDuration: 6.0, // 6 seconds per country loop cycle
+    cycleDuration: 8.0, // 8 seconds per cycle for a cinematic experience
+    lastShowCard: false,
   });
 
   const [activeIdx, setActiveIdx] = React.useState(0);
   const [progress, setProgress] = React.useState(0);
+  const [elapsedTime, setElapsedTime] = React.useState(0);
 
   // Shortest angle Y-axis LERP to prevent globe from spinning backwards during wraps
   const shortAngleLerp = (current: number, target: number, step: number) => {
@@ -264,11 +367,12 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     }
 
     const elapsed = stateRef.current.elapsedTime;
-    
+    setElapsedTime(elapsed);
+
     // Timings:
     // 0.0s to 1.5s: Camera focus rotation (progress = 0)
     // 1.5s to 5.0s: Flight progress goes 0.0 -> 1.0 (3.5 seconds duration)
-    // 5.0s to 6.0s: Plane arrived, stays at destination (progress = 1.0)
+    // 5.0s to 8.0s: Plane arrived, stays at destination (progress = 1.0)
     let p = 0;
     if (elapsed > 1.5 && elapsed <= 5.0) {
       p = (elapsed - 1.5) / 3.5;
@@ -277,6 +381,13 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     }
     setProgress(p);
     onProgressChange(p);
+
+    // Check if card should be shown (fade in on arrival at 5.0s, fade out on zoom pull back at 7.0s)
+    const shouldShowCard = elapsed >= 5.0 && elapsed < 7.0;
+    if (shouldShowCard !== stateRef.current.lastShowCard) {
+      stateRef.current.lastShowCard = shouldShowCard;
+      onShowCardChange(shouldShowCard);
+    }
 
     // 2. Smoothly rotate globe to center the active flight path (pause on hover unless mobile)
     if (globeGroupRef.current && (!isHovered || isMobile)) {
@@ -398,66 +509,71 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
   }, [earthTexture]);
 
   return (
-    <group ref={globeGroupRef}>
-      {/* Outer ambient golden sparkles */}
-      <Sparkles count={isMobile ? 15 : 40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
+    <group>
+      {/* Smoothly controls perspective zooming and panning sweeps */}
+      <CameraController activeIdx={activeIdx} progress={progress} elapsedTime={elapsedTime} />
 
-      {/* 1. Realistic 3D Satellite Earth Globe Sphere (Custom Day/Night + Bump Shader) */}
-      <mesh 
-        castShadow 
-        receiveShadow 
-        material={earthShaderMaterial}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          setIsHovered(true);
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          setIsHovered(false);
-        }}
-      >
-        <sphereGeometry args={[GLOBE_RADIUS, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
-      </mesh>
+      <group ref={globeGroupRef}>
+        {/* Outer ambient golden sparkles */}
+        <Sparkles count={isMobile ? 15 : 40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
 
-      {/* 2. Dynamic Rotating Clouds Layer */}
-      <mesh ref={cloudsRef}>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.025, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
-        <meshStandardMaterial
-          map={cloudsTexture}
-          transparent
-          opacity={0.35}
-          depthWrite={false}
-        />
-      </mesh>
+        {/* 1. Realistic 3D Satellite Earth Globe Sphere */}
+        <mesh 
+          castShadow 
+          receiveShadow 
+          material={earthShaderMaterial}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            setIsHovered(true);
+          }}
+          onPointerOut={(e) => {
+            e.stopPropagation();
+            setIsHovered(false);
+          }}
+        >
+          <sphereGeometry args={[GLOBE_RADIUS, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
+        </mesh>
 
-      {/* 3. Ahmedabad Base Pin (Globe Origin) */}
-      <mesh position={ahmedabadPos}>
-        <sphereGeometry args={[0.11, 16, 16]} />
-        <meshBasicMaterial color="#2563EB" />
-      </mesh>
-
-      {/* 4. Ahmedabad Pulse Rings */}
-      <AhmedabadPulse />
-
-      {/* 5. Destination Pins & Animated Curved Flight Paths */}
-      {destinationVectors.map((dest, idx) => (
-        <group key={idx}>
-          {/* Target Country destination pin */}
-          <mesh position={dest.vector}>
-            <sphereGeometry args={[0.08, 12, 12]} />
-            <meshBasicMaterial color={dest.color} />
-          </mesh>
-
-          {/* Curved flight path with 3D Jet plane + exhaust particles */}
-          <FlightPath 
-            start={ahmedabadPos} 
-            end={dest.vector} 
-            color={dest.color} 
-            isActive={idx === activeIdx}
-            progress={progress}
+        {/* 2. Dynamic Rotating Clouds Layer */}
+        <mesh ref={cloudsRef}>
+          <sphereGeometry args={[GLOBE_RADIUS + 0.025, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
+          <meshStandardMaterial
+            map={cloudsTexture}
+            transparent
+            opacity={0.35}
+            depthWrite={false}
           />
-        </group>
-      ))}
+        </mesh>
+
+        {/* 3. Ahmedabad Base Pin (Globe Origin) */}
+        <mesh position={ahmedabadPos}>
+          <sphereGeometry args={[0.11, 16, 16]} />
+          <meshBasicMaterial color="#2563EB" />
+        </mesh>
+
+        {/* 4. Ahmedabad Pulse Rings */}
+        <AhmedabadPulse />
+
+        {/* 5. Destination Pins & Animated Curved Flight Paths */}
+        {destinationVectors.map((dest, idx) => (
+          <group key={idx}>
+            {/* Target Country destination pin */}
+            <mesh position={dest.vector}>
+              <sphereGeometry args={[0.08, 12, 12]} />
+              <meshBasicMaterial color={dest.color} />
+            </mesh>
+
+            {/* Curved flight path with 3D Jet plane + exhaust particles */}
+            <FlightPath 
+              start={ahmedabadPos} 
+              end={dest.vector} 
+              color={dest.color} 
+              isActive={idx === activeIdx}
+              progress={progress}
+            />
+          </group>
+        ))}
+      </group>
     </group>
   );
 };
