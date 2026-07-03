@@ -34,26 +34,26 @@ function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector
 // 3D Airplane Mesh Component
 const AirplaneModel: React.FC<{ color: string }> = ({ color }) => {
   return (
-    <group scale={0.09}>
+    <group scale={0.11}>
       {/* Fuselage */}
       <mesh>
         <cylinderGeometry args={[0.15, 0.15, 0.9, 8]} />
-        <meshStandardMaterial color={color} roughness={0.2} metalness={0.9} />
+        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
       </mesh>
       {/* Main Wings */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <boxGeometry args={[1.3, 0.04, 0.25]} />
-        <meshStandardMaterial color={color} roughness={0.2} metalness={0.9} />
+        <boxGeometry args={[1.4, 0.04, 0.26]} />
+        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
       </mesh>
       {/* Tail Wings */}
       <mesh position={[0, -0.35, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <boxGeometry args={[0.5, 0.03, 0.12]} />
-        <meshStandardMaterial color={color} roughness={0.2} metalness={0.9} />
+        <boxGeometry args={[0.55, 0.03, 0.12]} />
+        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
       </mesh>
       {/* Tail Fin */}
       <mesh position={[0, -0.35, 0.12]} rotation={[0, 0.3, 0]}>
-        <boxGeometry args={[0.03, 0.15, 0.25]} />
-        <meshStandardMaterial color={color} roughness={0.2} metalness={0.9} />
+        <boxGeometry args={[0.03, 0.16, 0.25]} />
+        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
       </mesh>
     </group>
   );
@@ -63,25 +63,34 @@ interface TrailParticleProps {
   tOffset: number;
   curve: THREE.QuadraticBezierCurve3;
   color: string;
+  progress: number;
 }
 
 // Trailing particle component to create a glowing jet stream behind the airplane
-const TrailParticle: React.FC<TrailParticleProps> = ({ tOffset, curve, color }) => {
+const TrailParticle: React.FC<TrailParticleProps> = ({ tOffset, curve, color, progress }) => {
   const ref = useRef<THREE.Mesh>(null);
 
-  useFrame(({ clock }) => {
+  useFrame(() => {
     if (ref.current) {
-      let t = (clock.getElapsedTime() * 0.22 - tOffset) % 1;
-      if (t < 0) t += 1;
+      // Calculate trailing point along the curve
+      const t = Math.max(0, progress - tOffset);
       const pos = curve.getPointAt(t);
       ref.current.position.copy(pos);
+
+      // Fade out trail based on distance from the plane
+      const mat = ref.current.material as THREE.MeshBasicMaterial;
+      if (progress <= tOffset) {
+        mat.opacity = 0;
+      } else {
+        mat.opacity = 0.65 * (1 - tOffset * 15);
+      }
     }
   });
 
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[0.022 * (1 - tOffset * 15), 8, 8]} />
-      <meshBasicMaterial color={color} transparent opacity={0.6 * (1 - tOffset * 15)} toneMapped={false} />
+      <sphereGeometry args={[0.024 * (1 - tOffset * 15), 8, 8]} />
+      <meshBasicMaterial color={color} transparent opacity={0} toneMapped={false} />
     </mesh>
   );
 };
@@ -90,11 +99,14 @@ interface FlightPathProps {
   start: THREE.Vector3;
   end: THREE.Vector3;
   color: string;
+  isActive: boolean;
+  progress: number;
 }
 
 // Renders the curved flight route + the flying 3D airplane + jet trails
-const FlightPath: React.FC<FlightPathProps> = ({ start, end, color }) => {
+const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, progress }) => {
   const planeRef = useRef<THREE.Group>(null);
+  const lineRef = useRef<THREE.Line>(null);
 
   // Generate Bezier curve
   const curve = useMemo(() => {
@@ -115,19 +127,30 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color }) => {
     const mat = new THREE.LineBasicMaterial({
       color: color,
       transparent: true,
-      opacity: 0.35,
+      opacity: isActive ? 0.6 : 0.12, // Dim inactive paths
     });
     return new THREE.Line(geom, mat);
-  }, [points, color]);
+  }, [points, color, isActive]);
 
-  useFrame(({ clock }) => {
-    if (planeRef.current) {
-      const t = (clock.getElapsedTime() * 0.22) % 1;
-      const pos = curve.getPointAt(t);
+  // Dynamically update line points for the active drawing path
+  useFrame(() => {
+    if (lineRef.current) {
+      if (isActive) {
+        const activePointsCount = Math.max(2, Math.floor(progress * points.length));
+        const activePoints = points.slice(0, activePointsCount);
+        lineRef.current.geometry.setFromPoints(activePoints);
+      } else {
+        // Reset full path for static lines
+        lineRef.current.geometry.setFromPoints(points);
+      }
+    }
+
+    if (isActive && planeRef.current) {
+      const pos = curve.getPointAt(progress);
       planeRef.current.position.copy(pos);
 
       // Align airplane direction to curve tangent (forward vector)
-      const tangent = curve.getTangentAt(t).normalize();
+      const tangent = curve.getTangentAt(progress).normalize();
       const up = pos.clone().normalize(); // Pointing straight up away from sphere center
       const matrix = new THREE.Matrix4();
       
@@ -140,29 +163,98 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color }) => {
   return (
     <group>
       {/* Flight Arc Line */}
-      <primitive object={lineObj} />
+      <primitive ref={lineRef} object={lineObj} />
 
-      {/* Traveling 3D Jet Airplane */}
-      <group ref={planeRef}>
-        <AirplaneModel color={color} />
-      </group>
+      {/* Traveling 3D Jet Airplane - Only rendered on active route */}
+      {isActive && (
+        <>
+          <group ref={planeRef}>
+            <AirplaneModel color={color} />
+          </group>
 
-      {/* Jet Exhaust Trail Particles */}
-      <TrailParticle tOffset={0.015} curve={curve} color={color} />
-      <TrailParticle tOffset={0.03} curve={curve} color={color} />
-      <TrailParticle tOffset={0.045} curve={curve} color={color} />
+          {/* Jet Exhaust Trail Particles */}
+          <TrailParticle tOffset={0.015} curve={curve} color={color} progress={progress} />
+          <TrailParticle tOffset={0.03} curve={curve} color={color} progress={progress} />
+          <TrailParticle tOffset={0.045} curve={curve} color={color} progress={progress} />
+        </>
+      )}
     </group>
   );
 };
 
-export const Globe: React.FC = () => {
+interface GlobeProps {
+  onActiveIndexChange: (idx: number) => void;
+  onProgressChange: (p: number) => void;
+}
+
+export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressChange }) => {
   const globeGroupRef = useRef<THREE.Group>(null);
   const ahmedabadPos = useMemo(() => latLonToVector3(AHMEDABAD.lat, AHMEDABAD.lon, GLOBE_RADIUS), []);
 
-  // Slowly rotate the entire Earth globe
-  useFrame(() => {
+  const stateRef = useRef({
+    activeIdx: 0,
+    elapsedTime: 0,
+    cycleDuration: 7.0, // seconds per country cycle
+  });
+
+  const [activeIdx, setActiveIdx] = React.useState(0);
+  const [progress, setProgress] = React.useState(0);
+
+  // Shortest angle Y-axis LERP to prevent globe from spinning backwards during wraps
+  const shortAngleLerp = (current: number, target: number, step: number) => {
+    const diff = ((target - current + Math.PI) % (Math.PI * 2)) - Math.PI;
+    return current + (diff < -Math.PI ? diff + Math.PI * 2 : diff) * step;
+  };
+
+  // Calculate target rotation to face the midpoint of the active route
+  const targetRotation = useMemo(() => {
+    const dest = destinations[activeIdx];
+    const midLat = (AHMEDABAD.lat + dest.lat) / 2;
+    const midLon = (AHMEDABAD.lon + dest.lon) / 2;
+
+    const yRot = -midLon * (Math.PI / 180);
+    const xRot = midLat * (Math.PI / 180);
+
+    return { x: xRot, y: yRot };
+  }, [activeIdx]);
+
+  useFrame((state, delta) => {
+    // 1. Cycle active destinations
+    stateRef.current.elapsedTime += delta;
+    if (stateRef.current.elapsedTime >= stateRef.current.cycleDuration) {
+      stateRef.current.elapsedTime = 0;
+      stateRef.current.activeIdx = (stateRef.current.activeIdx + 1) % destinations.length;
+      setActiveIdx(stateRef.current.activeIdx);
+      onActiveIndexChange(stateRef.current.activeIdx);
+    }
+
+    const elapsed = stateRef.current.elapsedTime;
+    
+    // Timings:
+    // 0.0s to 1.5s: Camera focus rotation (progress = 0)
+    // 1.5s to 5.5s: Flight progress goes 0.0 -> 1.0 (4 seconds duration)
+    // 5.5s to 7.0s: Plane arrived, stays at destination (progress = 1.0)
+    let p = 0;
+    if (elapsed > 1.5 && elapsed <= 5.5) {
+      p = (elapsed - 1.5) / 4.0;
+    } else if (elapsed > 5.5) {
+      p = 1.0;
+    }
+    setProgress(p);
+    onProgressChange(p);
+
+    // 2. Smoothly rotate globe to center the active flight path
     if (globeGroupRef.current) {
-      globeGroupRef.current.rotation.y += 0.0012;
+      globeGroupRef.current.rotation.x = THREE.MathUtils.lerp(
+        globeGroupRef.current.rotation.x,
+        targetRotation.x,
+        0.05
+      );
+      globeGroupRef.current.rotation.y = shortAngleLerp(
+        globeGroupRef.current.rotation.y,
+        targetRotation.y,
+        0.05
+      );
     }
   });
 
@@ -315,7 +407,7 @@ export const Globe: React.FC = () => {
       {/* Outer ambient golden sparkles */}
       <Sparkles count={40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
 
-      {/* 1. Atmospheric Glow Halo (Renders a soft blue aura around the globe edge) */}
+      {/* 1. Atmospheric Glow Halo */}
       <mesh>
         <sphereGeometry args={[GLOBE_RADIUS + 0.08, 32, 32]} />
         <meshBasicMaterial
@@ -370,7 +462,13 @@ export const Globe: React.FC = () => {
           </mesh>
 
           {/* Curved flight path with 3D Jet plane + exhaust particles */}
-          <FlightPath start={ahmedabadPos} end={dest.vector} color={dest.color} />
+          <FlightPath 
+            start={ahmedabadPos} 
+            end={dest.vector} 
+            color={dest.color} 
+            isActive={idx === activeIdx}
+            progress={progress}
+          />
         </group>
       ))}
     </group>
