@@ -31,29 +31,50 @@ function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector
   return new THREE.Vector3(x, y, z);
 }
 
-// 3D Airplane Mesh Component
+// Highly Realistic Commercial Passenger Jet 3D Model
 const AirplaneModel: React.FC<{ color: string }> = ({ color }) => {
   return (
-    <group scale={0.11}>
-      {/* Fuselage */}
-      <mesh>
-        <cylinderGeometry args={[0.15, 0.15, 0.9, 8]} />
-        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
+    <group scale={0.24}> {/* Increased scale for clear visibility */}
+      {/* Fuselage (Body) */}
+      <mesh castShadow>
+        <cylinderGeometry args={[0.07, 0.05, 1.0, 8]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.2} metalness={0.8} />
       </mesh>
-      {/* Main Wings */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <boxGeometry args={[1.4, 0.04, 0.26]} />
-        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
+      
+      {/* Nose cone (cockpit area) */}
+      <mesh position={[0, 0.5, 0]}>
+        <sphereGeometry args={[0.07, 8, 8]} />
+        <meshStandardMaterial color="#E2E8F0" roughness={0.2} metalness={0.8} />
       </mesh>
-      {/* Tail Wings */}
-      <mesh position={[0, -0.35, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <boxGeometry args={[0.55, 0.03, 0.12]} />
-        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
+
+      {/* Swept Back Main Wings */}
+      <mesh position={[0, 0.1, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <boxGeometry args={[1.5, 0.02, 0.15]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.2} metalness={0.8} />
       </mesh>
-      {/* Tail Fin */}
-      <mesh position={[0, -0.35, 0.12]} rotation={[0, 0.3, 0]}>
-        <boxGeometry args={[0.03, 0.16, 0.25]} />
-        <meshStandardMaterial color={color} roughness={0.1} metalness={0.95} />
+
+      {/* Underwing Jet Engines - Left & Right */}
+      {/* Left Engine */}
+      <mesh position={[-0.35, 0.12, -0.05]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.22, 6]} />
+        <meshStandardMaterial color={color} roughness={0.2} metalness={0.9} />
+      </mesh>
+      {/* Right Engine */}
+      <mesh position={[0.35, 0.12, -0.05]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.22, 6]} />
+        <meshStandardMaterial color={color} roughness={0.2} metalness={0.9} />
+      </mesh>
+
+      {/* Tail horizontal stabilizers */}
+      <mesh position={[0, -0.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <boxGeometry args={[0.55, 0.015, 0.1]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.2} metalness={0.8} />
+      </mesh>
+
+      {/* Tail Fin (Vertical Stabilizer) */}
+      <mesh position={[0, -0.4, 0.1]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[0.15, 0.18, 0.018]} />
+        <meshStandardMaterial color={color} roughness={0.2} metalness={0.8} />
       </mesh>
     </group>
   );
@@ -82,14 +103,14 @@ const TrailParticle: React.FC<TrailParticleProps> = ({ tOffset, curve, color, pr
       if (progress <= tOffset) {
         mat.opacity = 0;
       } else {
-        mat.opacity = 0.65 * (1 - tOffset * 15);
+        mat.opacity = 0.7 * (1 - tOffset * 12);
       }
     }
   });
 
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[0.024 * (1 - tOffset * 15), 8, 8]} />
+      <sphereGeometry args={[0.035 * (1 - tOffset * 12), 8, 8]} />
       <meshBasicMaterial color={color} transparent opacity={0} toneMapped={false} />
     </mesh>
   );
@@ -127,7 +148,7 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
     const mat = new THREE.LineBasicMaterial({
       color: color,
       transparent: true,
-      opacity: isActive ? 0.75 : 0.18, // Dim inactive paths
+      opacity: isActive ? 0.95 : 0.22, // High contrast visibility
     });
     return new THREE.Line(geom, mat);
   }, [points, color, isActive]);
@@ -285,11 +306,9 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     }));
   }, []);
 
-  // Load high-quality realistic satellite Earth textures, bump height maps, and night lights
-  const [earthTexture, bumpMap, nightTexture, cloudsTexture] = useTexture([
+  // Load high-quality realistic satellite Earth textures & translucent cloud textures
+  const [earthTexture, cloudsTexture] = useTexture([
     "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-    "https://unpkg.com/three-globe/example/img/earth-topology.png",
-    "https://unpkg.com/three-globe/example/img/earth-night.jpg",
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png"
   ]);
 
@@ -316,49 +335,20 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
 
     return (
       <mesh ref={ringRef} position={ahmedabadPos} quaternion={ringQuaternion}>
-        <ringGeometry args={[0.05, 0.12, 32]} />
+        <ringGeometry args={[0.08, 0.18, 32]} />
         <meshBasicMaterial color="#2563EB" transparent opacity={0.8} side={THREE.DoubleSide} />
       </mesh>
     );
   };
 
-  // Atmosphere Shader definition (Spaceedu Fresnel atmosphere glow style)
-  const atmosphereMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        color: { value: new THREE.Color("#4facfe") } // Vibrant cyan-blue glow
-      },
-      vertexShader: `
-        varying vec3 vNormal;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vNormal;
-        uniform vec3 color;
-        void main() {
-          // Fresnel calculation
-          float intensity = pow(0.7 - dot(vNormal, vec3(0, 0, 1.0)), 2.5);
-          gl_FragColor = vec4(color, 1.0) * intensity;
-        }
-      `,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      side: THREE.BackSide,
-      depthWrite: false
-    });
-  }, []);
-
-  // Custom high-contrast Day/Night Earth Shader with Specular Oceans and Bump Relief
+  // Custom high-contrast Day/Night Earth Shader with Specular Oceans
   const earthShaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         uDayMap: { value: earthTexture },
-        uNightMap: { value: nightTexture },
-        uBumpMap: { value: bumpMap },
-        uLightDirection: { value: new THREE.Vector3(5, 3, 5).normalize() }
+        uLightDirection: { value: new THREE.Vector3(5, 3, 5).normalize() },
+        uOceanColor: { value: new THREE.Color("#F1F5F9") },
+        uLandColor: { value: new THREE.Color("#FFFFFF") }
       },
       vertexShader: `
         varying vec2 vUv;
@@ -374,54 +364,45 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
       `,
       fragmentShader: `
         uniform sampler2D uDayMap;
-        uniform sampler2D uNightMap;
-        uniform sampler2D uBumpMap;
         uniform vec3 uLightDirection;
+        uniform vec3 uOceanColor;
+        uniform vec3 uLandColor;
         varying vec2 vUv;
         varying vec3 vNormal;
         varying vec3 vViewPosition;
         
         void main() {
           vec4 dayColor = texture2D(uDayMap, vUv);
-          vec4 nightColor = texture2D(uNightMap, vUv);
-          vec4 bumpColor = texture2D(uBumpMap, vUv);
           
           vec3 normal = normalize(vNormal);
-          float bumpScale = 0.04;
-          normal = normalize(normal + vec3(bumpColor.r * bumpScale));
-          
           float dotNL = dot(normal, uLightDirection);
-          float dayIntensity = smoothstep(-0.15, 0.15, dotNL);
           
-          // Specular highlights only on water (Red channel is low in blue marble)
-          float isOcean = step(dayColor.r, 0.15);
+          // Segment oceans (low red) from lands (high red)
+          float isOcean = step(dayColor.r, 0.12);
+          vec3 baseColor = mix(uLandColor, uOceanColor, isOcean);
+          
+          // Specular highlights only on water
           vec3 viewDir = normalize(vViewPosition);
           vec3 halfDir = normalize(uLightDirection + viewDir);
           float specAngle = max(dot(normal, halfDir), 0.0);
           float specular = pow(specAngle, 16.0) * isOcean * 0.45;
           
-          vec3 dayColorShaded = dayColor.rgb + vec3(specular);
-          vec3 finalDay = dayColorShaded * max(dotNL, 0.0);
-          vec3 finalNight = nightColor.rgb * (1.0 - dayIntensity) * 0.85;
+          // Lambertian shading
+          float diffuse = max(dotNL, 0.1);
+          vec3 shadedColor = baseColor * (diffuse * 0.75 + 0.35) + vec3(specular);
           
-          vec3 finalColor = mix(finalNight, finalDay + dayColorShaded * 0.08, dayIntensity);
-          gl_FragColor = vec4(finalColor, 1.0);
+          gl_FragColor = vec4(shadedColor, 1.0);
         }
       `
     });
-  }, [earthTexture, nightTexture, bumpMap]);
+  }, [earthTexture]);
 
   return (
     <group ref={globeGroupRef}>
       {/* Outer ambient golden sparkles */}
       <Sparkles count={isMobile ? 15 : 40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
 
-      {/* 1. Atmospheric Glow Halo (Spaceedu style vibrant Fresnel glow) */}
-      <mesh material={atmosphereMaterial}>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.08, 64, 64]} />
-      </mesh>
-
-      {/* 2. Realistic 3D Satellite Earth Globe Sphere (Custom Day/Night + Bump Shader) */}
+      {/* 1. Realistic 3D Satellite Earth Globe Sphere (Custom Day/Night + Bump Shader) */}
       <mesh 
         castShadow 
         receiveShadow 
@@ -438,9 +419,9 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
         <sphereGeometry args={[GLOBE_RADIUS, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
       </mesh>
 
-      {/* 3. Dynamic Rotating Clouds Layer */}
+      {/* 2. Dynamic Rotating Clouds Layer */}
       <mesh ref={cloudsRef}>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.02, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
+        <sphereGeometry args={[GLOBE_RADIUS + 0.025, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
         <meshStandardMaterial
           map={cloudsTexture}
           transparent
@@ -449,21 +430,21 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
         />
       </mesh>
 
-      {/* 4. Ahmedabad Base Pin (Globe Origin) */}
+      {/* 3. Ahmedabad Base Pin (Globe Origin) */}
       <mesh position={ahmedabadPos}>
-        <sphereGeometry args={[0.075, 16, 16]} />
+        <sphereGeometry args={[0.11, 16, 16]} />
         <meshBasicMaterial color="#2563EB" />
       </mesh>
 
-      {/* 5. Ahmedabad Pulse Rings */}
+      {/* 4. Ahmedabad Pulse Rings */}
       <AhmedabadPulse />
 
-      {/* 6. Destination Pins & Animated Curved Flight Paths */}
+      {/* 5. Destination Pins & Animated Curved Flight Paths */}
       {destinationVectors.map((dest, idx) => (
         <group key={idx}>
           {/* Target Country destination pin */}
           <mesh position={dest.vector}>
-            <sphereGeometry args={[0.055, 12, 12]} />
+            <sphereGeometry args={[0.08, 12, 12]} />
             <meshBasicMaterial color={dest.color} />
           </mesh>
 
