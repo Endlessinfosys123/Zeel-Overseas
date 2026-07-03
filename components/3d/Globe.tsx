@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Sparkles, useTexture } from "@react-three/drei";
@@ -192,10 +192,23 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
   const cloudsRef = useRef<THREE.Mesh>(null);
   const ahmedabadPos = useMemo(() => latLonToVector3(AHMEDABAD.lat, AHMEDABAD.lon, GLOBE_RADIUS), []);
 
+  const [isMobile, setIsMobile] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Monitor resize for mobile optimization
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const stateRef = useRef({
     activeIdx: 0,
     elapsedTime: 0,
-    cycleDuration: 7.0, // seconds per country cycle
+    cycleDuration: 6.0, // 6 seconds per country loop cycle
   });
 
   const [activeIdx, setActiveIdx] = React.useState(0);
@@ -233,19 +246,19 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     
     // Timings:
     // 0.0s to 1.5s: Camera focus rotation (progress = 0)
-    // 1.5s to 5.5s: Flight progress goes 0.0 -> 1.0 (4 seconds duration)
-    // 5.5s to 7.0s: Plane arrived, stays at destination (progress = 1.0)
+    // 1.5s to 5.0s: Flight progress goes 0.0 -> 1.0 (3.5 seconds duration)
+    // 5.0s to 6.0s: Plane arrived, stays at destination (progress = 1.0)
     let p = 0;
-    if (elapsed > 1.5 && elapsed <= 5.5) {
-      p = (elapsed - 1.5) / 4.0;
-    } else if (elapsed > 5.5) {
+    if (elapsed > 1.5 && elapsed <= 5.0) {
+      p = (elapsed - 1.5) / 3.5;
+    } else if (elapsed > 5.0) {
       p = 1.0;
     }
     setProgress(p);
     onProgressChange(p);
 
-    // 2. Smoothly rotate globe to center the active flight path
-    if (globeGroupRef.current) {
+    // 2. Smoothly rotate globe to center the active flight path (pause on hover unless mobile)
+    if (globeGroupRef.current && (!isHovered || isMobile)) {
       globeGroupRef.current.rotation.x = THREE.MathUtils.lerp(
         globeGroupRef.current.rotation.x,
         targetRotation.x,
@@ -272,9 +285,11 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     }));
   }, []);
 
-  // Load high-quality realistic satellite Earth textures & translucent cloud textures
-  const [earthTexture, cloudsTexture] = useTexture([
+  // Load high-quality realistic satellite Earth textures, bump height maps, and night lights
+  const [earthTexture, bumpMap, nightTexture, cloudsTexture] = useTexture([
     "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+    "https://unpkg.com/three-globe/example/img/earth-topology.png",
+    "https://unpkg.com/three-globe/example/img/earth-night.jpg",
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png"
   ]);
 
@@ -336,70 +351,96 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     });
   }, []);
 
-  // Custom high-contrast shader material to map the satellite landmasses cleanly and sharply
-  // Land: #FFFFFF (White) | Ocean: #EFF6FF (Super clean light blue-slate)
+  // Custom high-contrast Day/Night Earth Shader with Specular Oceans and Bump Relief
   const earthShaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
-        uEarthMap: { value: earthTexture },
-        uOceanColor: { value: new THREE.Color("#F1F5F9") }, // Light blue-slate ocean
-        uLandColor: { value: new THREE.Color("#FFFFFF") },  // Clean white land
+        uDayMap: { value: earthTexture },
+        uNightMap: { value: nightTexture },
+        uBumpMap: { value: bumpMap },
         uLightDirection: { value: new THREE.Vector3(5, 3, 5).normalize() }
       },
       vertexShader: `
         varying vec2 vUv;
         varying vec3 vNormal;
+        varying vec3 vViewPosition;
         void main() {
           vUv = uv;
           vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vViewPosition = -mvPosition.xyz;
+          gl_Position = projectionMatrix * mvPosition;
         }
       `,
       fragmentShader: `
-        uniform sampler2D uEarthMap;
-        uniform vec3 uOceanColor;
-        uniform vec3 uLandColor;
+        uniform sampler2D uDayMap;
+        uniform sampler2D uNightMap;
+        uniform sampler2D uBumpMap;
         uniform vec3 uLightDirection;
         varying vec2 vUv;
         varying vec3 vNormal;
+        varying vec3 vViewPosition;
         
         void main() {
-          vec4 texColor = texture2D(uEarthMap, vUv);
-          // Segment oceans (very low red channel) from lands (high red channel)
-          float isOcean = step(texColor.r, 0.12);
+          vec4 dayColor = texture2D(uDayMap, vUv);
+          vec4 nightColor = texture2D(uNightMap, vUv);
+          vec4 bumpColor = texture2D(uBumpMap, vUv);
           
-          vec3 baseColor = mix(uLandColor, uOceanColor, isOcean);
-          
-          // Lambertian diffuse shading
           vec3 normal = normalize(vNormal);
-          float diffuse = max(dot(normal, uLightDirection), 0.1);
+          float bumpScale = 0.04;
+          normal = normalize(normal + vec3(bumpColor.r * bumpScale));
           
-          // Smooth color shading with ambient glow
-          vec3 finalColor = baseColor * (diffuse * 0.75 + 0.35);
+          float dotNL = dot(normal, uLightDirection);
+          float dayIntensity = smoothstep(-0.15, 0.15, dotNL);
+          
+          // Specular highlights only on water (Red channel is low in blue marble)
+          float isOcean = step(dayColor.r, 0.15);
+          vec3 viewDir = normalize(vViewPosition);
+          vec3 halfDir = normalize(uLightDirection + viewDir);
+          float specAngle = max(dot(normal, halfDir), 0.0);
+          float specular = pow(specAngle, 16.0) * isOcean * 0.45;
+          
+          vec3 dayColorShaded = dayColor.rgb + vec3(specular);
+          vec3 finalDay = dayColorShaded * max(dotNL, 0.0);
+          vec3 finalNight = nightColor.rgb * (1.0 - dayIntensity) * 0.85;
+          
+          vec3 finalColor = mix(finalNight, finalDay + dayColorShaded * 0.08, dayIntensity);
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `
     });
-  }, [earthTexture]);
+  }, [earthTexture, nightTexture, bumpMap]);
 
   return (
     <group ref={globeGroupRef}>
       {/* Outer ambient golden sparkles */}
-      <Sparkles count={40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
+      <Sparkles count={isMobile ? 15 : 40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
 
       {/* 1. Atmospheric Glow Halo (Spaceedu style vibrant Fresnel glow) */}
       <mesh material={atmosphereMaterial}>
         <sphereGeometry args={[GLOBE_RADIUS + 0.08, 64, 64]} />
       </mesh>
 
-      {/* 2. Realistic 3D Satellite Earth Globe Sphere (Custom high-contrast white lands) */}
-      <mesh castShadow receiveShadow material={earthShaderMaterial}>
-        <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
+      {/* 2. Realistic 3D Satellite Earth Globe Sphere (Custom Day/Night + Bump Shader) */}
+      <mesh 
+        castShadow 
+        receiveShadow 
+        material={earthShaderMaterial}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setIsHovered(true);
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          setIsHovered(false);
+        }}
+      >
+        <sphereGeometry args={[GLOBE_RADIUS, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
       </mesh>
 
       {/* 3. Dynamic Rotating Clouds Layer */}
       <mesh ref={cloudsRef}>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.02, 64, 64]} />
+        <sphereGeometry args={[GLOBE_RADIUS + 0.02, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
         <meshStandardMaterial
           map={cloudsTexture}
           transparent
