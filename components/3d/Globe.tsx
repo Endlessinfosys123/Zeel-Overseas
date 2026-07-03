@@ -127,7 +127,7 @@ const FlightPath: React.FC<FlightPathProps> = ({ start, end, color, isActive, pr
     const mat = new THREE.LineBasicMaterial({
       color: color,
       transparent: true,
-      opacity: isActive ? 0.6 : 0.12, // Dim inactive paths
+      opacity: isActive ? 0.7 : 0.15, // Dim inactive paths
     });
     return new THREE.Line(geom, mat);
   }, [points, color, isActive]);
@@ -189,6 +189,7 @@ interface GlobeProps {
 
 export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressChange }) => {
   const globeGroupRef = useRef<THREE.Group>(null);
+  const cloudsRef = useRef<THREE.Mesh>(null);
   const ahmedabadPos = useMemo(() => latLonToVector3(AHMEDABAD.lat, AHMEDABAD.lon, GLOBE_RADIUS), []);
 
   const stateRef = useRef({
@@ -256,6 +257,11 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
         0.05
       );
     }
+
+    // 3. Rotate clouds slightly faster than the Earth for realism
+    if (cloudsRef.current) {
+      cloudsRef.current.rotation.y += 0.0016;
+    }
   });
 
   // Calculate destination vectors
@@ -266,10 +272,11 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     }));
   }, []);
 
-  // Load high-quality realistic satellite Earth textures
-  const [earthTexture, bumpMap] = useTexture([
+  // Load high-quality realistic satellite Earth textures & translucent cloud textures
+  const [earthTexture, bumpMap, cloudsTexture] = useTexture([
     "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
-    "https://unpkg.com/three-globe/example/img/earth-topology.png"
+    "https://unpkg.com/three-globe/example/img/earth-topology.png",
+    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png"
   ]);
 
   // Align a ring normal flat against the sphere's surface at Ahmedabad
@@ -301,20 +308,43 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
     );
   };
 
+  // Atmosphere Shader definition (Spaceedu Fresnel atmosphere glow style)
+  const atmosphereMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        color: { value: new THREE.Color("#4facfe") } // Vibrant cyan-blue glow
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        uniform vec3 color;
+        void main() {
+          // Fresnel calculation
+          float intensity = pow(0.7 - dot(vNormal, vec3(0, 0, 1.0)), 2.5);
+          gl_FragColor = vec4(color, 1.0) * intensity;
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+  }, []);
+
   return (
     <group ref={globeGroupRef}>
       {/* Outer ambient golden sparkles */}
       <Sparkles count={40} scale={6} size={0.8} speed={0.25} color="#D4AF37" opacity={0.4} />
 
-      {/* 1. Atmospheric Glow Halo */}
-      <mesh>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.08, 32, 32]} />
-        <meshBasicMaterial
-          color="#3B82F6"
-          transparent
-          opacity={0.06}
-          side={THREE.BackSide}
-        />
+      {/* 1. Atmospheric Glow Halo (Spaceedu style vibrant Fresnel glow) */}
+      <mesh material={atmosphereMaterial}>
+        <sphereGeometry args={[GLOBE_RADIUS + 0.12, 64, 64]} />
       </mesh>
 
       {/* 2. Realistic 3D Satellite Earth Globe Sphere */}
@@ -323,20 +353,20 @@ export const Globe: React.FC<GlobeProps> = ({ onActiveIndexChange, onProgressCha
         <meshStandardMaterial
           map={earthTexture}
           bumpMap={bumpMap}
-          bumpScale={0.04}
-          roughness={0.6}
-          metalness={0.15}
+          bumpScale={0.05}
+          roughness={0.45} // Ocean specular reflections
+          metalness={0.12}
         />
       </mesh>
 
-      {/* 3. Subtle outer blueprint grid lines */}
-      <mesh>
-        <sphereGeometry args={[GLOBE_RADIUS + 0.015, 32, 32]} />
-        <meshBasicMaterial
-          color="#2563EB"
-          wireframe
+      {/* 3. Dynamic Rotating Clouds Layer */}
+      <mesh ref={cloudsRef}>
+        <sphereGeometry args={[GLOBE_RADIUS + 0.025, 64, 64]} />
+        <meshStandardMaterial
+          map={cloudsTexture}
           transparent
-          opacity={0.04}
+          opacity={0.35}
+          depthWrite={false}
         />
       </mesh>
 
