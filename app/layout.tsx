@@ -52,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} scroll-smooth`}>
-      <body className="bg-white text-brand-charcoal min-h-screen flex flex-col antialiased">
+      <body className="bg-transparent text-brand-charcoal min-h-screen flex flex-col antialiased">
         {/* Grain Noise Overlay for Tactile Premium Feeling */}
         <div className="noise-overlay" aria-hidden="true" />
         
@@ -67,9 +67,9 @@ export default function RootLayout({
 
         {/* Inertia Smooth Scroll Wrapper */}
         <SmoothScroll>
-          <div className="flex flex-col min-h-screen relative">
+          <div className="flex flex-col min-h-screen relative" style={{ background: "transparent" }}>
             <Navbar />
-            <main className="flex-grow pt-20">
+            <main className="flex-grow pt-20" style={{ background: "transparent" }}>
               {children}
             </main>
             <Footer />
