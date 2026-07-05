@@ -49,7 +49,7 @@ export const ServicesPreview: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      className="py-24 bg-brand-warm relative z-10 overflow-hidden"
+      className="py-24 relative z-10 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}

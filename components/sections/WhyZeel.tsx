@@ -65,7 +65,7 @@ export const WhyZeel: React.FC = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative bg-white z-10 md:h-screen flex flex-col justify-center overflow-hidden py-20 md:py-0">
+    <div ref={containerRef} className="relative z-10 md:h-screen flex flex-col justify-center overflow-hidden py-20 md:py-0">
       {/* Mobile view: standard vertical stack */}
       <div className="md:hidden max-w-7xl mx-auto px-6 space-y-12">
         <div>

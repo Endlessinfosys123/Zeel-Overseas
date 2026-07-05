@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="relative bg-brand-warm pt-20 pb-10 overflow-hidden border-t border-brand-gray-medium/50 z-10">
+    <footer className="relative pt-20 pb-10 overflow-hidden border-t border-brand-gray-medium/30 z-10 bg-white/70 backdrop-blur-sm">
       {/* Huge faded decorative wordmark in the background */}
       <div className="absolute bottom-[-10px] left-1/2 transform -translate-x-1/2 select-none pointer-events-none w-full text-center overflow-hidden h-fit z-0 opacity-[0.02] translate-y-[20%]">
         <span className="font-display font-black text-[12vw] tracking-tighter uppercase text-brand-charcoal leading-none whitespace-nowrap">

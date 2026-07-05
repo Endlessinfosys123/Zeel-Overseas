@@ -46,7 +46,7 @@ export const TestimonialCarousel: React.FC = () => {
   const activeTestimonial = testimonialsData[activeIndex];
 
   return (
-    <section className="py-24 bg-white relative z-10 overflow-hidden">
+    <section className="py-24 relative z-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Heading and Context */}

@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 export const FinalCTA: React.FC = () => {
   return (
-    <section className="relative py-32 bg-gradient-to-b from-white to-brand-blue-bg overflow-hidden z-10">
+    <section className="relative py-32 overflow-hidden z-10">
       {/* 3D-like floating/pulsing pastel orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-blue/10 rounded-full blur-[80px] animate-float pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-brand-gold/10 rounded-full blur-[70px] animate-float pointer-events-none" style={{ animationDelay: "2s" }} />

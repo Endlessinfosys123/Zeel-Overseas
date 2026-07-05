@@ -117,7 +117,7 @@ const ParallaxCard: React.FC<ParallaxCardProps> = ({ country }) => {
 
 export const CountryGrid: React.FC = () => {
   return (
-    <section className="py-24 bg-brand-warm relative z-10 overflow-hidden">
+    <section className="py-24 relative z-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Title */}
         <div className="max-w-3xl mb-16">
