@@ -3,10 +3,33 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { RealPlane, FlightArcPath } from "@/components/ui/GlobalBackground";
 
 export const FinalCTA: React.FC = () => {
   return (
-    <section className="relative py-32 overflow-hidden z-10">
+    <section className="relative py-32 overflow-hidden z-10 bg-transparent">
+      {/* Unique FinalCTA Local Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        {/* Giant curved flight route */}
+        <div className="absolute top-[10%] left-[10%] opacity-25 w-4/5">
+          <FlightArcPath w={800} h={250} color="#2563EB" />
+        </div>
+
+        {/* Commercial airliner soaring high diagonally */}
+        <motion.div
+          className="absolute opacity-15"
+          style={{ bottom: "10%", left: "12%" }}
+          animate={{
+            left: ["12%", "82%"],
+            bottom: ["15%", "72%"],
+            rotate: [-15, -28]
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <RealPlane size={56} color="#2563EB" className="rotate-[75deg]" />
+        </motion.div>
+      </div>
       {/* 3D-like floating/pulsing pastel orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-blue/10 rounded-full blur-[80px] animate-float pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-brand-gold/10 rounded-full blur-[70px] animate-float pointer-events-none" style={{ animationDelay: "2s" }} />

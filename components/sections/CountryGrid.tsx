@@ -115,10 +115,50 @@ const ParallaxCard: React.FC<ParallaxCardProps> = ({ country }) => {
   );
 };
 
+import { motion } from "framer-motion";
+import { RealPlane, FlightArcPath } from "@/components/ui/GlobalBackground";
+
 export const CountryGrid: React.FC = () => {
   return (
-    <section className="py-24 relative z-10 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-24 relative z-10 overflow-hidden bg-transparent">
+      {/* Unique CountryGrid Local Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        {/* Arc radiating to top-right */}
+        <div className="absolute top-[5%] left-[2%] opacity-35">
+          <FlightArcPath w={320} h={130} color="#2563EB" />
+        </div>
+        <motion.div
+          className="absolute opacity-20"
+          style={{ top: "5%", left: "2%" }}
+          animate={{
+            left: ["2%", "50%"],
+            top: ["18%", "4%", "18%"],
+            rotate: [20, 0, -20]
+          }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <RealPlane size={26} color="#2563EB" />
+        </motion.div>
+
+        {/* Arc radiating to top-left */}
+        <div className="absolute top-[20%] right-[5%] opacity-30 rotate-12">
+          <FlightArcPath w={280} h={100} color="#D4AF37" />
+        </div>
+        <motion.div
+          className="absolute opacity-15"
+          style={{ top: "20%", right: "5%" }}
+          animate={{
+            right: ["5%", "45%"],
+            top: ["28%", "16%", "28%"],
+            rotate: [-20, 0, 20]
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        >
+          <RealPlane size={24} color="#D4AF37" className="-rotate-90" />
+        </motion.div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Title */}
         <div className="max-w-3xl mb-16">
           <span className="text-xs font-display font-black tracking-widest text-brand-blue uppercase block mb-3">

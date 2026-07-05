@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { processStepsData } from "@/lib/data";
-import { Plane } from "lucide-react";
+import { RealPlane } from "@/components/ui/GlobalBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -84,8 +84,8 @@ export const ProcessTimeline: React.FC = () => {
             {/* Growing Progress Line */}
             <div className="timeline-progress absolute top-0 left-0 w-full bg-brand-blue z-10 transition-all duration-75 origin-top flex flex-col justify-end">
               {/* Traveling Airplane Dot */}
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-8 h-8 rounded-full bg-white border-2 border-brand-blue shadow-md flex items-center justify-center z-20">
-                <Plane className="w-4 h-4 text-brand-blue rotate-90" />
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-9 h-9 rounded-full bg-white border-2 border-brand-blue shadow-md flex items-center justify-center z-20">
+                <RealPlane size={18} color="#2563EB" className="rotate-180" />
               </div>
             </div>
           </div>

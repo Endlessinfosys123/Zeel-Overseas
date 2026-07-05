@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, Plane, Globe2, FileCheck, Star } from "lucide-react";
 import SplitText from "@/components/ui/SplitText";
 import HeroVisualPanel from "@/components/sections/HeroVisualPanel";
+import { RealPlane, FlightArcPath, CompassIcon } from "@/components/ui/GlobalBackground";
 
 // Quick stat chips
 const floatStats = [
@@ -51,13 +52,46 @@ export const HeroSection: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden z-10"
+      className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden z-10 bg-transparent"
     >
-      {/* Local section blobs (complement GlobalBackground) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* ── UNIQUE HERO BACKGROUND ELEMENTS ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
+        {/* Soft Radial Gradients */}
         <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-blue-100/50 blur-3xl" />
         <div className="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full bg-amber-100/40 blur-3xl" />
         <div className="absolute -bottom-20 left-1/3 w-[600px] h-[280px] rounded-full bg-sky-100/40 blur-3xl" />
+
+        {/* Flight Arc Dotted Line */}
+        <div className="absolute top-[18%] left-[2%] opacity-60">
+          <FlightArcPath w={320} h={130} color="#2563EB" />
+        </div>
+
+        {/* Real passenger jet airliner flying along flight route */}
+        <motion.div
+          className="absolute"
+          style={{ top: "18%", left: "-5%" }}
+          animate={{
+            left: ["-5%", "105%"],
+            top: ["22%", "16%", "22%"],
+            rotate: [20, 0, -20],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <RealPlane size={36} color="#2563EB" />
+        </motion.div>
+
+        {/* Rotating Compass Outline */}
+        <motion.div
+          className="absolute bottom-[10%] left-[4%] opacity-25"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
+        >
+          <CompassIcon size={100} color="#D4AF37" />
+        </motion.div>
         <div className="absolute -bottom-10 -right-20 w-[350px] h-[350px] rounded-full bg-yellow-100/30 blur-3xl" />
       </div>
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { testimonialsData } from "@/lib/data";
+import { RealPlane } from "@/components/ui/GlobalBackground";
 
 export const TestimonialCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -46,8 +47,30 @@ export const TestimonialCarousel: React.FC = () => {
   const activeTestimonial = testimonialsData[activeIndex];
 
   return (
-    <section className="py-24 relative z-10 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-24 relative z-10 overflow-hidden bg-transparent">
+      {/* Unique TestimonialCarousel Local Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        {/* Ascent path dashed line */}
+        <svg className="absolute top-[25%] left-[5%] opacity-20 w-4/5 h-[300px] pointer-events-none select-none" viewBox="0 0 1000 300">
+          <path d="M 50 250 Q 500 200 950 50" fill="none" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
+        </svg>
+
+        {/* Commercial jet ascending diagonally */}
+        <motion.div
+          className="absolute opacity-15"
+          style={{ bottom: "5%", left: "5%" }}
+          animate={{
+            left: ["5%", "90%"],
+            bottom: ["10%", "75%"],
+            rotate: [-15, -25],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <RealPlane size={44} color="#2563EB" className="rotate-[75deg]" />
+        </motion.div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Heading and Context */}
           <div className="lg:col-span-5 flex flex-col space-y-6">

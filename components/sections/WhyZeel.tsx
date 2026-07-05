@@ -5,6 +5,9 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { Shield, BookOpen, FileCheck, CheckCircle } from "lucide-react";
 
+import { motion } from "framer-motion";
+import { RealPlane, GlobeIcon } from "@/components/ui/GlobalBackground";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const differentiators = [
@@ -65,9 +68,30 @@ export const WhyZeel: React.FC = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative z-10 md:h-screen flex flex-col justify-center overflow-hidden py-20 md:py-0">
+    <div ref={containerRef} className="relative z-10 md:h-screen flex flex-col justify-center overflow-hidden py-20 md:py-0 bg-transparent">
+      {/* Globe Orbit Local Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden flex items-center justify-center">
+        <div className="relative w-[300px] h-[300px] opacity-25">
+          {/* Wireframe globe outline */}
+          <GlobeIcon size={300} color="#2563EB" />
+          
+          {/* Orbit path circle */}
+          <div className="absolute inset-0 rounded-full border border-dashed border-brand-blue/35 animate-spin" style={{ animationDuration: "35s" }} />
+
+          {/* Passenger jet airliner orbiting the globe */}
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ width: "300px", height: "300px" }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          >
+            <RealPlane size={28} color="#2563EB" className="absolute top-0 left-1/2 -translate-x-1/2 -rotate-90" />
+          </motion.div>
+        </div>
+      </div>
+
       {/* Mobile view: standard vertical stack */}
-      <div className="md:hidden max-w-7xl mx-auto px-6 space-y-12">
+      <div className="md:hidden max-w-7xl mx-auto px-6 space-y-12 relative z-10">
         <div>
           <span className="text-xs font-display font-black tracking-widest text-brand-blue uppercase block mb-2">
             The Zeel Standard

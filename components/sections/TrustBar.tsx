@@ -3,6 +3,8 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
+import { RealPlane } from "@/components/ui/GlobalBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,12 +50,35 @@ export const TrustBar: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  // Double the array for infinite scroll layout
+// Double the array for infinite scroll layout
   const doubleCountries = [...countries, ...countries, ...countries];
 
   return (
-    <section ref={containerRef} className="py-16 border-y border-brand-gray-medium/20 z-10 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section ref={containerRef} className="py-16 border-y border-brand-gray-medium/20 z-10 relative overflow-hidden bg-transparent">
+      {/* Unique TrustBar Local Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        {/* Left-to-right slow airliner */}
+        <motion.div
+          className="absolute opacity-15"
+          style={{ top: "15%", left: "-10%", rotate: 90 }}
+          animate={{ left: ["-10%", "110%"] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        >
+          <RealPlane size={48} color="#2563EB" />
+        </motion.div>
+
+        {/* Right-to-left fast airliner */}
+        <motion.div
+          className="absolute opacity-10"
+          style={{ top: "60%", right: "-10%", rotate: -90 }}
+          animate={{ right: ["-10%", "110%"] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "linear", delay: 4 }}
+        >
+          <RealPlane size={40} color="#D4AF37" />
+        </motion.div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Subhead text */}
         <p className="text-center text-xs font-display font-bold tracking-widest text-brand-gray-dark uppercase mb-8">
           Empowering borderless journeys for ambition

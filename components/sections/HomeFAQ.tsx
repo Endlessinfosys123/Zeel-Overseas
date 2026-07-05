@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, HelpCircle } from "lucide-react";
+import { RealPlane } from "@/components/ui/GlobalBackground";
 
 
 const faqs = [
@@ -33,7 +34,28 @@ export default function HomeFAQ() {
 
   return (
     <section className="py-24 relative overflow-hidden bg-transparent z-10">
-      <div className="max-w-4xl mx-auto px-6">
+      {/* Unique HomeFAQ Local Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        {/* Horizontal runway lines */}
+        <div className="absolute left-0 right-0 top-[20%] border-t border-dashed border-brand-blue/15" />
+        <div className="absolute left-0 right-0 top-[80%] border-t border-dashed border-brand-blue/15" />
+
+        {/* Commercial airliner landing/takeoff animation */}
+        <motion.div
+          className="absolute opacity-[0.09]"
+          style={{ top: "45%", left: "105%" }}
+          animate={{
+            left: ["105%", "-15%"],
+            top: ["38%", "52%"],
+            scale: [1.2, 0.8]
+          }}
+          transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+        >
+          <RealPlane size={90} color="#2563EB" className="-rotate-[90deg]" />
+        </motion.div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
           <span className="text-xs font-display font-black tracking-widest text-brand-blue uppercase block mb-3">

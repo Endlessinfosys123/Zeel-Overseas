@@ -8,6 +8,9 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { servicesData } from "@/lib/data";
 import { GraduationCap, Briefcase, FileText, Globe, Landmark, ShieldCheck, ArrowRight } from "lucide-react";
 
+import { motion } from "framer-motion";
+import { RealPlane, FlightArcPath } from "@/components/ui/GlobalBackground";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const iconMap = {
@@ -49,9 +52,46 @@ export const ServicesPreview: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      className="py-24 relative z-10 overflow-hidden"
+      className="py-24 relative z-10 overflow-hidden bg-transparent"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      {/* Intersecting Global Flight Pathways Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        {/* Left arc */}
+        <div className="absolute top-[10%] left-[-5%] opacity-40">
+          <FlightArcPath w={300} h={120} color="#2563EB" />
+        </div>
+        <motion.div
+          className="absolute opacity-20"
+          style={{ top: "10%", left: "-5%" }}
+          animate={{
+            left: ["-5%", "40%"],
+            top: ["20%", "8%", "20%"],
+            rotate: [20, 0, -20]
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <RealPlane size={24} color="#2563EB" />
+        </motion.div>
+
+        {/* Right arc */}
+        <div className="absolute bottom-[15%] right-[-5%] opacity-45 rotate-180">
+          <FlightArcPath w={300} h={110} color="#D4AF37" />
+        </div>
+        <motion.div
+          className="absolute opacity-25"
+          style={{ bottom: "15%", right: "-5%" }}
+          animate={{
+            right: ["-5%", "40%"],
+            bottom: ["22%", "10%", "22%"],
+            rotate: [-20, 0, 20]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        >
+          <RealPlane size={24} color="#D4AF37" className="-rotate-180" />
+        </motion.div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="max-w-3xl mb-16">
           <span className="text-xs font-display font-black tracking-widest text-brand-blue uppercase block mb-3">
