@@ -97,7 +97,7 @@ export default function About() {
   }, []);
 
   return (
-    <div ref={containerRef} className="bg-brand-offwhite">
+    <div ref={containerRef} className="bg-transparent">
       {/* 1. HERO SECTION */}
       <section className="py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -106,19 +106,19 @@ export default function About() {
               Behind Zeel Overseas
             </span>
             <h1 className="clamp-title font-display font-black text-brand-charcoal leading-none">
-              <SplitText text="Engineering Global" type="words" />
+              <SplitText text="About Zeel" type="words" />
               <br />
-              <SplitText text="Resettlement." type="words" />
+              <SplitText text="Overseas" type="words" />
             </h1>
             <p className="clamp-subtitle text-brand-charcoal/70 max-w-2xl font-body about-fade opacity-0 translate-y-4">
-              We started with a simple belief: moving across borders is more than getting a stamp. It is a critical, life-altering transition that demands absolute compliance accuracy and legal integrity.
+              Zeel Overseas was founded with a simple belief: that navigating a visa or immigration process shouldn&apos;t feel confusing or uncertain. Based in Ahmedabad, we work closely with students, professionals, and families to turn their plans to study, work, or settle abroad into a clear, achievable path — backed by honest guidance and meticulous documentation support.
             </p>
           </div>
         </div>
       </section>
 
       {/* 2. MISSION & VISION WIPE SECTION */}
-      <section className="py-24 bg-white wipe-section relative z-10 border-y border-brand-gray-medium/40">
+      <section className="py-24 wipe-section relative z-10 border-y border-brand-gray-medium/20 bg-white/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left: Text split */}
           <div className="lg:col-span-6 space-y-12 pr-0 lg:pr-12">
@@ -130,11 +130,11 @@ export default function About() {
                 The Mission
               </h2>
               <p className="text-sm font-body text-brand-charcoal/70 leading-relaxed">
-                To eliminate visa application uncertainty through rigorous documentation auditing, strategic visa pathing, and direct transparency, enabling ambitious minds to resettle globally without friction.
+                To make global mobility accessible and stress-free for every client, through transparent counselling, accurate documentation, and unwavering support at every stage of the visa journey.
               </p>
             </div>
 
-            <div className="border-t border-brand-gray-medium/40 pt-10">
+            <div className="border-t border-brand-gray-medium/20 pt-10">
               <span className="text-xs font-display font-black tracking-widest text-brand-gold uppercase block mb-3">
                 Our Horizon
               </span>
@@ -167,7 +167,7 @@ export default function About() {
       </section>
 
       {/* 3. COMPANY TIMELINE / MILESTONES */}
-      <section className="py-24 relative overflow-hidden bg-brand-offwhite">
+      <section className="py-24 relative overflow-hidden bg-transparent">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-3xl mb-16">
             <span className="text-xs font-display font-black tracking-widest text-brand-blue uppercase block mb-3">
@@ -185,10 +185,10 @@ export default function About() {
             <div className="space-y-12 relative z-10">
               {milestonesData.map((milestone, idx) => (
                 <div key={idx} className="flex items-start space-x-8 timeline-item">
-                  <div className="w-16 h-16 rounded-2xl bg-white border border-brand-gray-medium/60 shadow-sm flex items-center justify-center font-display font-black text-lg text-brand-blue shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-white/70 backdrop-blur-sm border border-brand-gray-medium/60 shadow-sm flex items-center justify-center font-display font-black text-lg text-brand-blue shrink-0">
                     {milestone.year}
                   </div>
-                  <div className="bg-white border border-brand-gray-medium/55 p-6 rounded-2xl shadow-sm hover:border-brand-blue/15 transition-all">
+                  <div className="bg-white/60 backdrop-blur-sm border border-brand-gray-medium/55 p-6 rounded-2xl shadow-sm hover:border-brand-blue/15 transition-all">
                     <h3 className="font-display font-bold text-lg text-brand-charcoal mb-2">
                       {milestone.title}
                     </h3>
@@ -204,7 +204,7 @@ export default function About() {
       </section>
 
       {/* 4. TEAM GRID */}
-      <section className="py-24 bg-white relative z-10 border-t border-brand-gray-medium/40">
+      <section className="py-24 relative z-10 border-t border-brand-gray-medium/20 bg-transparent">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-3xl mb-16">
             <span className="text-xs font-display font-black tracking-widest text-brand-blue uppercase block mb-3">
@@ -228,7 +228,7 @@ export default function About() {
                 tiltMaxAngleX={6}
                 tiltMaxAngleY={6}
               >
-                <div className="group bg-brand-offwhite border border-brand-gray-medium/60 rounded-3xl p-6 shadow-sm hover:border-brand-gold/30 transition-colors flex flex-col justify-between aspect-[3/4]">
+                <div className="group bg-white/60 backdrop-blur-sm border border-brand-gray-medium/60 rounded-3xl p-6 shadow-sm hover:border-brand-gold/30 transition-colors flex flex-col justify-between aspect-[3/4]">
                   {/* Portrait photo frame */}
                   <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-6 border border-brand-gray-medium/40 bg-white">
                     <Image
@@ -255,7 +255,7 @@ export default function About() {
       </section>
 
       {/* 5. AFFILIATIONS ROW */}
-      <section className="py-20 bg-brand-warm border-y border-brand-gray-medium/40 z-10 relative overflow-hidden">
+      <section className="py-20 border-y border-brand-gray-medium/20 z-10 relative overflow-hidden bg-transparent">
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-center text-xs font-display font-bold tracking-widest text-brand-gray-dark uppercase mb-8">
             Global Accreditations & Certifications
@@ -264,7 +264,7 @@ export default function About() {
             {affiliations.map((aff, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-brand-gray-medium/45 p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 shadow-sm hover:border-brand-blue/20 transition-colors animate-float"
+                className="bg-white/70 backdrop-blur-sm border border-brand-gray-medium/45 p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 shadow-sm hover:border-brand-blue/20 transition-colors animate-float"
                 style={{ animationDelay: `${idx * 0.5}s` }}
               >
                 <div className="w-12 h-12 rounded-xl bg-brand-offwhite flex items-center justify-center border border-brand-gray-medium/20">

@@ -71,7 +71,7 @@ export default function Testimonials() {
   });
 
   return (
-    <div ref={containerRef} className="bg-brand-offwhite min-h-screen py-16">
+    <div ref={containerRef} className="bg-transparent min-h-screen py-16">
       {/* 1. HERO HEADER */}
       <section className="py-16 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
@@ -80,21 +80,21 @@ export default function Testimonials() {
               Client Feedback
             </span>
             <h1 className="clamp-title font-display font-black text-brand-charcoal leading-none">
-              <SplitText text="Verified Client" type="words" />
+              <SplitText text="Success Stories" type="words" />
               <br />
-              <SplitText text="Success Stories." type="words" />
+              <SplitText text="From Our Clients." type="words" />
             </h1>
             <p className="clamp-subtitle text-brand-charcoal/70 max-w-2xl font-body testimonials-fade opacity-0 translate-y-4">
-              Explore honest stories of students and working professionals who achieved overseas residency and permits with our compliance audits.
+              Every visa approval is a story. Here&apos;s what our clients say about their journey with Zeel Overseas.
             </p>
           </div>
         </div>
       </section>
 
       {/* 2. STATS OVERVIEW SECTION */}
-      <section className="py-12 bg-white border-y border-brand-gray-medium/40 z-10 relative">
+      <section className="py-12 border-y border-brand-gray-medium/20 z-10 relative bg-white/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex items-center space-x-4 bg-brand-offwhite p-6 rounded-2xl border border-brand-gray-medium/30">
+          <div className="flex items-center space-x-4 bg-white/60 p-6 rounded-2xl border border-brand-gray-medium/30">
             <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue">
               <Globe className="w-6 h-6" />
             </div>
@@ -109,7 +109,7 @@ export default function Testimonials() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 bg-brand-offwhite p-6 rounded-2xl border border-brand-gray-medium/30">
+          <div className="flex items-center space-x-4 bg-white/60 p-6 rounded-2xl border border-brand-gray-medium/30">
             <div className="w-12 h-12 rounded-xl bg-brand-gold/15 flex items-center justify-center text-brand-gold">
               <BadgeCheck className="w-6 h-6 animate-pulse" />
             </div>
@@ -124,7 +124,7 @@ export default function Testimonials() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 bg-brand-offwhite p-6 rounded-2xl border border-brand-gray-medium/30">
+          <div className="flex items-center space-x-4 bg-white/60 p-6 rounded-2xl border border-brand-gray-medium/30">
             <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue">
               <Heart className="w-6 h-6 fill-current text-brand-blue" />
             </div>
@@ -142,7 +142,7 @@ export default function Testimonials() {
       </section>
 
       {/* 3. TABS / FILTER ROW */}
-      <section className="py-8 bg-brand-offwhite z-20 relative">
+      <section className="py-8 bg-transparent z-20 relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap gap-3 items-center">
             {filterPills.map((pill) => (
@@ -256,7 +256,7 @@ export default function Testimonials() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white border border-brand-gray-medium/55 p-8 rounded-3xl shadow-sm flex flex-col justify-between"
+                  className="bg-white/70 backdrop-blur-md border border-brand-gray-medium/55 p-8 rounded-3xl shadow-sm flex flex-col justify-between"
                 >
                   <div>
                     {/* Stars */}

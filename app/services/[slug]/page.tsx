@@ -83,10 +83,10 @@ export default function ServiceDetail() {
   const relatedServices = servicesData.filter((s) => s.slug !== slug).slice(0, 3);
 
   return (
-    <div className="bg-brand-offwhite min-h-screen py-12">
+    <div className="bg-transparent min-h-screen py-12">
       {/* 1. HERO PORTFOLIO */}
       <section className="max-w-7xl mx-auto px-6 mb-16 relative">
-        <div className="bg-white border border-brand-gray-medium/55 rounded-3xl p-8 md:p-12 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center overflow-hidden relative">
+        <div className="bg-white/75 backdrop-blur-md border border-brand-gray-medium/55 rounded-3xl p-8 md:p-12 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center overflow-hidden relative">
           
           {/* Animated decorative orb */}
           <div className="absolute -right-20 -top-20 w-80 h-80 bg-brand-blue/5 rounded-full blur-3xl pointer-events-none" />
@@ -114,7 +114,7 @@ export default function ServiceDetail() {
 
           {/* Right Icon/Badge Frame */}
           <div className="lg:col-span-4 flex justify-center lg:justify-end relative z-10">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-brand-offwhite border border-brand-gray-medium/50 flex items-center justify-center shadow-md animate-float">
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-white/60 border border-brand-gray-medium/50 flex items-center justify-center shadow-md animate-float">
               {Icon && <Icon className="w-16 h-16 md:w-20 md:h-20 text-brand-blue" />}
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function ServiceDetail() {
         {/* Left Column: Requirements & Accordions */}
         <div className="lg:col-span-8 space-y-12">
           {/* Eligibility Requirements */}
-          <div className="bg-white border border-brand-gray-medium/50 p-8 rounded-3xl shadow-sm">
+          <div className="bg-white/70 backdrop-blur-md border border-brand-gray-medium/50 p-8 rounded-3xl shadow-sm">
             <h2 className="text-2xl font-display font-black text-brand-charcoal mb-6 border-b border-brand-gray-medium/30 pb-4">
               Eligibility Thresholds
             </h2>
@@ -148,7 +148,7 @@ export default function ServiceDetail() {
           </div>
 
           {/* Required Documents checklist */}
-          <div className="bg-white border border-brand-gray-medium/50 p-8 rounded-3xl shadow-sm">
+          <div className="bg-white/70 backdrop-blur-md border border-brand-gray-medium/50 p-8 rounded-3xl shadow-sm">
             <h2 className="text-2xl font-display font-black text-brand-charcoal mb-6 border-b border-brand-gray-medium/30 pb-4">
               Required Documentation Checklist
             </h2>
@@ -156,7 +156,7 @@ export default function ServiceDetail() {
               {service.documents.map((doc, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start space-x-3 bg-brand-offwhite border border-brand-gray-medium/40 p-4 rounded-xl text-xs font-body text-brand-charcoal/80 leading-relaxed"
+                  className="flex items-start space-x-3 bg-white/60 border border-brand-gray-medium/40 p-4 rounded-xl text-xs font-body text-brand-charcoal/80 leading-relaxed"
                 >
                   <FileDown className="w-5 h-5 text-brand-gold shrink-0" />
                   <span>{doc}</span>
@@ -166,7 +166,7 @@ export default function ServiceDetail() {
           </div>
 
           {/* Frequently Asked Questions */}
-          <div className="bg-white border border-brand-gray-medium/50 p-8 rounded-3xl shadow-sm">
+          <div className="bg-white/70 backdrop-blur-md border border-brand-gray-medium/50 p-8 rounded-3xl shadow-sm">
             <h2 className="text-2xl font-display font-black text-brand-charcoal mb-6 border-b border-brand-gray-medium/30 pb-4">
               Frequently Asked Questions
             </h2>
@@ -186,7 +186,7 @@ export default function ServiceDetail() {
 
         {/* Right Column: Sticky Booking Sidebar */}
         <div className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
-          <div className="bg-white border-[2px] border-brand-gold p-8 rounded-3xl shadow-lg relative overflow-hidden">
+          <div className="bg-white/75 backdrop-blur-md border-[2px] border-brand-gold p-8 rounded-3xl shadow-lg relative overflow-hidden">
             {/* Top gold glow effect */}
             <div className="absolute top-0 inset-x-0 h-1 bg-brand-gold" />
             
@@ -231,7 +231,7 @@ export default function ServiceDetail() {
               <Link
                 key={rel.slug}
                 href={`/services/${rel.slug}`}
-                className="bg-white border border-brand-gray-medium/55 p-6 rounded-2xl hover:border-brand-blue/20 transition-colors shadow-sm block group"
+                className="bg-white/70 backdrop-blur-sm border border-brand-gray-medium/55 p-6 rounded-2xl hover:border-brand-blue/20 transition-colors shadow-sm block group"
               >
                 <div className="w-10 h-10 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center mb-4 group-hover:bg-brand-blue group-hover:text-white transition-colors duration-300">
                   {RelIcon && <RelIcon className="w-5 h-5" />}

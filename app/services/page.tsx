@@ -71,7 +71,7 @@ export default function Services() {
   });
 
   return (
-    <div ref={containerRef} className="bg-brand-offwhite min-h-screen py-16">
+    <div ref={containerRef} className="bg-transparent min-h-screen py-16">
       {/* 1. HERO HEADER */}
       <section className="py-16 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
@@ -80,19 +80,19 @@ export default function Services() {
               Immigration Portfolios
             </span>
             <h1 className="clamp-title font-display font-black text-brand-charcoal leading-none">
-              <SplitText text="Visa Services &" type="words" />
+              <SplitText text="Immigration &" type="words" />
               <br />
-              <SplitText text="Embassy Pathways." type="words" />
+              <SplitText text="Visa Services." type="words" />
             </h1>
             <p className="clamp-subtitle text-brand-charcoal/70 max-w-2xl font-body services-fade opacity-0 translate-y-4">
-              Certified global mobility streams mapping applicants to permanent residency systems, employment authorizations, and top university admissions.
+              Whatever your reason for going abroad — education, career, or a new life — Zeel Overseas offers tailored guidance for every visa category.
             </p>
           </div>
         </div>
       </section>
 
       {/* 2. FILTER MENU TAB SYSTEM */}
-      <section className="py-8 border-y border-brand-gray-medium/40 bg-white relative z-20">
+      <section className="py-8 border-y border-brand-gray-medium/20 bg-white/40 backdrop-blur-sm relative z-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap gap-3 items-center">
             {filterTabs.map((tab) => (

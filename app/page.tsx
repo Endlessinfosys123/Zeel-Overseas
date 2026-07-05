@@ -6,6 +6,7 @@ import WhyZeel from "@/components/sections/WhyZeel";
 import ProcessTimeline from "@/components/sections/ProcessTimeline";
 import TestimonialCarousel from "@/components/sections/TestimonialCarousel";
 import CountryGrid from "@/components/sections/CountryGrid";
+import HomeFAQ from "@/components/sections/HomeFAQ";
 import FinalCTA from "@/components/sections/FinalCTA";
 
 export default function Home() {
@@ -31,6 +32,9 @@ export default function Home() {
       
       {/* Crossfading client reviews */}
       <TestimonialCarousel />
+
+      {/* Frequently Asked Questions */}
+      <HomeFAQ />
       
       {/* Golden CTA banner with floating blur orbs */}
       <FinalCTA />

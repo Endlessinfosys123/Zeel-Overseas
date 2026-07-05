@@ -23,21 +23,21 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Zeel Overseas | Premium Visa & Immigration Consultants",
-  description: "Awwwards-grade immigration and visa consulting. Secure study visas, work permits, permanent residency (PR), and tourist visas for Canada, Australia, UK, USA, Germany, and New Zealand with a 98% success rate.",
-  keywords: ["Zeel Overseas", "Visa Consultants", "Immigration Agency", "Study Visa Canada", "Australia PR Subclass", "Work Permits UK", "USA Student Visas", "Express Entry Canada", "Embassy Documentation Service"],
+  title: "Zeel Overseas | Immigration & Visa Consultants, Ahmedabad",
+  description: "Zeel Overseas offers expert visa & immigration consultancy in Ahmedabad — study visas, work permits, PR pathways & visa documentation for Canada, UK, Australia, USA & more.",
+  keywords: ["Zeel Overseas", "Visa Consultants", "Immigration Agency", "Study Visa Canada", "Australia PR Subclass", "Work Permits UK", "USA Student Visas", "Express Entry Canada", "Embassy Documentation Service", "immigration consultant Ahmedabad", "visa consultancy Gujarat", "study visa consultant Ahmedabad", "work visa consultants", "PR visa consultant", "best immigration consultant in Ahmedabad", "Canada visa consultant Ahmedabad", "Germany opportunity card consultant"],
   authors: [{ name: "Zeel Overseas" }],
   openGraph: {
-    title: "Zeel Overseas | Premium Visa & Immigration Consultants",
-    description: "Navigate global visa pathways successfully. Certified consultation, documentation, and mock interview preps for high success rates.",
+    title: "Zeel Overseas | Immigration & Visa Consultants, Ahmedabad",
+    description: "Zeel Overseas offers expert visa & immigration consultancy in Ahmedabad — study visas, work permits, PR pathways & visa documentation for Canada, UK, Australia, USA & more.",
     type: "website",
     locale: "en_US",
     siteName: "Zeel Overseas",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zeel Overseas | Premium Visa & Immigration Consultants",
-    description: "Navigate global visa pathways successfully.",
+    title: "Zeel Overseas | Immigration & Visa Consultants, Ahmedabad",
+    description: "Zeel Overseas offers expert visa & immigration consultancy in Ahmedabad — study visas, work permits, PR pathways & visa documentation for Canada, UK, Australia, USA & more.",
   },
   robots: {
     index: true,

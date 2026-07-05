@@ -43,7 +43,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="bg-brand-offwhite min-h-screen py-16 relative">
+    <div className="bg-transparent min-h-screen py-16 relative">
       {/* 1. HERO SECTION */}
       <section className="py-12 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
@@ -52,12 +52,12 @@ export default function Contact() {
               Direct Contact
             </span>
             <h1 className="clamp-title font-display font-black text-brand-charcoal leading-none">
-              <SplitText text="Connect With" type="words" />
+              <SplitText text="Let&apos;s Plan Your" type="words" />
               <br />
-              <SplitText text="Our Offices." type="words" />
+              <SplitText text="Global Move." type="words" />
             </h1>
             <p className="clamp-subtitle text-brand-charcoal/70 max-w-xl font-body">
-              Contact our certified case advisors. Standard evaluation filings are queued in order of arrival.
+              Have a question about your visa options? Reach out — our counsellors are ready to help. Standard evaluation filings are queued in order of arrival.
             </p>
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function Contact() {
       <section className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-24 z-10 relative">
         
         {/* Left Column: Form Wrapper */}
-        <div className="lg:col-span-7 bg-white border border-brand-gray-medium/55 p-8 md:p-10 rounded-3xl shadow-sm">
+        <div className="lg:col-span-7 bg-white/70 backdrop-blur-md border border-brand-gray-medium/55 p-8 md:p-10 rounded-3xl shadow-sm">
           <h2 className="text-2xl font-display font-black text-brand-charcoal mb-6 border-b border-brand-gray-medium/30 pb-4">
             Consultation Case File
           </h2>
@@ -83,7 +83,7 @@ export default function Contact() {
                   type="text"
                   id="name"
                   {...register("name")}
-                  className={`w-full bg-brand-offwhite border ${
+                  className={`w-full bg-white/60 border ${
                     errors.name ? "border-red-500" : "border-brand-gray-medium/60"
                   } text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body`}
                   placeholder="John Doe"
@@ -102,7 +102,7 @@ export default function Contact() {
                   type="email"
                   id="email"
                   {...register("email")}
-                  className={`w-full bg-brand-offwhite border ${
+                  className={`w-full bg-white/60 border ${
                     errors.email ? "border-red-500" : "border-brand-gray-medium/60"
                   } text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body`}
                   placeholder="john@example.com"
@@ -123,7 +123,7 @@ export default function Contact() {
                   type="tel"
                   id="phone"
                   {...register("phone")}
-                  className={`w-full bg-brand-offwhite border ${
+                  className={`w-full bg-white/60 border ${
                     errors.phone ? "border-red-500" : "border-brand-gray-medium/60"
                   } text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body`}
                   placeholder="+91 98765 43210"
@@ -141,7 +141,7 @@ export default function Contact() {
                 <select
                   id="visaInterest"
                   {...register("visaInterest")}
-                  className={`w-full bg-brand-offwhite border ${
+                  className={`w-full bg-white/60 border ${
                     errors.visaInterest ? "border-red-500" : "border-brand-gray-medium/60"
                   } text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body cursor-pointer`}
                 >
@@ -159,6 +159,26 @@ export default function Contact() {
               </div>
             </div>
 
+            {/* Destination Country Dropdown */}
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="destination" className="text-xs font-display font-bold text-brand-charcoal/70 uppercase tracking-wide">
+                Preferred Destination Country
+              </label>
+              <select
+                id="destination"
+                className="w-full bg-white/60 border border-brand-gray-medium/60 text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body cursor-pointer"
+              >
+                <option value="">Select Destination</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="United States">United States</option>
+                <option value="Germany">Germany</option>
+                <option value="New Zealand">New Zealand</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
             {/* Message */}
             <div className="flex flex-col space-y-2">
               <label htmlFor="message" className="text-xs font-display font-bold text-brand-charcoal/70 uppercase tracking-wide">
@@ -168,7 +188,7 @@ export default function Contact() {
                 id="message"
                 rows={5}
                 {...register("message")}
-                className={`w-full bg-brand-offwhite border ${
+                className={`w-full bg-white/60 border ${
                   errors.message ? "border-red-500" : "border-brand-gray-medium/60"
                 } text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body resize-none`}
                 placeholder="Detail your educational history, language score, or job profile..."
@@ -231,7 +251,7 @@ export default function Contact() {
         {/* Right Column: Office info & map */}
         <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-28">
           {/* Office Details */}
-          <div className="bg-white border border-brand-gray-medium/55 p-8 rounded-3xl shadow-sm space-y-6">
+          <div className="bg-white/70 backdrop-blur-md border border-brand-gray-medium/55 p-8 rounded-3xl shadow-sm space-y-6">
             <h3 className="font-display font-black text-2xl text-brand-charcoal mb-4">
               Headquarters
             </h3>
