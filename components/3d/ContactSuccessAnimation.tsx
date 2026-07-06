@@ -22,12 +22,12 @@ function isWebGLAvailable() {
 const TakeoffScene = dynamic(() => import("./TakeoffScene"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#311042] flex flex-col items-center justify-center p-8 min-h-[480px] rounded-3xl select-none">
+    <div className="w-full h-full bg-gradient-to-br from-[#BAE6FD] via-[#E0F2FE] to-[#FFFBEB] flex flex-col items-center justify-center p-8 min-h-[480px] rounded-3xl select-none">
       <div className="relative flex items-center justify-center mb-6">
         <Loader2 className="w-16 h-16 text-brand-blue animate-spin" />
         <Plane className="w-6 h-6 text-brand-gold absolute" />
       </div>
-      <h3 className="font-display font-black text-white text-lg tracking-wide animate-pulse">
+      <h3 className="font-display font-black text-brand-charcoal text-lg tracking-wide animate-pulse">
         Preparing Flight Animation...
       </h3>
       <span className="text-[10px] font-display font-bold tracking-widest text-brand-gray-dark uppercase mt-2">
@@ -47,32 +47,32 @@ const Fallback2DAnimation: React.FC<{ onComplete: () => void }> = ({ onComplete 
   }, [onComplete]);
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#311042] relative rounded-3xl overflow-hidden shadow-inner flex flex-col items-center justify-center p-6 select-none min-h-[480px]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-blue/10 via-transparent to-transparent opacity-60" />
+    <div className="w-full h-full bg-gradient-to-br from-[#BAE6FD] via-[#E0F2FE] to-[#FFFBEB] relative rounded-3xl overflow-hidden shadow-inner flex flex-col items-center justify-center p-6 select-none min-h-[480px]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-blue/10 via-transparent to-transparent opacity-40" />
       
       {/* Animated 2D Clouds */}
       <motion.div
-        initial={{ x: "120%", y: "15%", opacity: 0.15 }}
+        initial={{ x: "120%", y: "15%", opacity: 0.4 }}
         animate={{ x: "-120%" }}
         transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
-        className="absolute w-24 h-8 bg-white/10 rounded-full blur-sm"
+        className="absolute w-24 h-8 bg-white/60 rounded-full blur-sm"
       />
       <motion.div
-        initial={{ x: "120%", y: "40%", opacity: 0.25 }}
+        initial={{ x: "120%", y: "40%", opacity: 0.5 }}
         animate={{ x: "-120%" }}
         transition={{ duration: 9, repeat: Infinity, ease: "linear", delay: 2.5 }}
-        className="absolute w-36 h-12 bg-white/10 rounded-full blur-md"
+        className="absolute w-36 h-12 bg-white/50 rounded-full blur-md"
       />
       <motion.div
-        initial={{ x: "120%", y: "65%", opacity: 0.1 }}
+        initial={{ x: "120%", y: "65%", opacity: 0.35 }}
         animate={{ x: "-120%" }}
         transition={{ duration: 17, repeat: Infinity, ease: "linear", delay: 5 }}
-        className="absolute w-28 h-10 bg-white/15 rounded-full blur-sm"
+        className="absolute w-28 h-10 bg-white/60 rounded-full blur-sm"
       />
 
       {/* Runway Representation */}
-      <div className="absolute bottom-0 w-36 h-28 border-l border-r border-dashed border-white/20 origin-bottom transform [transform:perspective(120px)_rotateX(65deg)] bg-white/5 flex justify-center">
-        <div className="w-0.5 h-full bg-brand-gold/40 border-dashed border-t border-b border-spacing-2" />
+      <div className="absolute bottom-0 w-36 h-28 border-l border-r border-dashed border-brand-charcoal/10 origin-bottom transform [transform:perspective(120px)_rotateX(65deg)] bg-brand-charcoal/5 flex justify-center">
+        <div className="w-0.5 h-full bg-brand-gold/50 border-dashed border-t border-b border-spacing-2" />
       </div>
 
       {/* Jet Soaring */}
@@ -92,7 +92,7 @@ const Fallback2DAnimation: React.FC<{ onComplete: () => void }> = ({ onComplete 
           repeat: Infinity,
           repeatDelay: 0.5
         }}
-        className="relative z-10 text-white flex items-center justify-center"
+        className="relative z-10 text-brand-blue flex items-center justify-center"
       >
         <svg
           width="80"
@@ -103,7 +103,7 @@ const Fallback2DAnimation: React.FC<{ onComplete: () => void }> = ({ onComplete 
           strokeWidth="1.2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-white drop-shadow-[0_0_15px_rgba(59,130,246,0.65)] transform -rotate-45"
+          className="text-brand-blue drop-shadow-[0_0_15px_rgba(37,99,235,0.35)] transform -rotate-45"
         >
           <path d="M21 16V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z" fill="#FFFFFF" />
           <path d="M3 21l18-18" strokeWidth="2.5" />
@@ -119,7 +119,7 @@ const Fallback2DAnimation: React.FC<{ onComplete: () => void }> = ({ onComplete 
         />
       </motion.div>
 
-      <span className="text-xs font-display tracking-widest text-brand-gold/60 uppercase absolute bottom-8 animate-pulse">
+      <span className="text-xs font-display tracking-widest text-brand-charcoal/50 uppercase absolute bottom-8 animate-pulse">
         Flight Taking Off...
       </span>
     </div>

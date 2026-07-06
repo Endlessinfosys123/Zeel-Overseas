@@ -2,140 +2,155 @@
 
 import React, { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sparkles, Stars } from "@react-three/drei";
+import { Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 
-// Custom detailed Passenger Airplane Model matching company colors
-const AirplaneModel: React.FC = () => {
+// Static window offsets for the passenger airliner fuselage
+const WINDOW_OFFSETS = [-0.85, -0.69, -0.53, -0.37, -0.21, -0.05, 0.11, 0.27, 0.43, 0.59, 0.75];
+
+// Flashing Beacon and Strobe Lights helper component
+const AircraftLights: React.FC = () => {
+  const beaconMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const strobeMatRef = useRef<THREE.MeshBasicMaterial>(null);
+
+  useFrame(({ clock }) => {
+    const time = clock.getElapsedTime();
+
+    // Red beacon flashing (1Hz pulse)
+    if (beaconMatRef.current) {
+      const beaconOn = Math.sin(time * 7) > 0.2;
+      beaconMatRef.current.color.set(beaconOn ? "#EF4444" : "#2E0808");
+    }
+
+    // White wingtip strobe flashing (double flash every 1.2s)
+    if (strobeMatRef.current) {
+      const cycle = time % 1.2;
+      const strobeOn = (cycle > 0.0 && cycle < 0.08) || (cycle > 0.2 && cycle < 0.28);
+      strobeMatRef.current.color.set(strobeOn ? "#FFFFFF" : "#000000");
+    }
+  });
+
   return (
-    <group scale={0.65}>
-      {/* Fuselage - Main Body */}
-      <mesh castShadow>
-        <cylinderGeometry args={[0.18, 0.14, 3.0, 16]} />
-        <meshStandardMaterial color="#FFFFFF" roughness={0.15} metalness={0.1} />
+    <group>
+      {/* Top Fuselage Red Beacon */}
+      <mesh position={[0, 0.21, -0.1]}>
+        <sphereGeometry args={[0.025, 8, 8]} />
+        <meshBasicMaterial ref={beaconMatRef} color="#EF4444" />
+      </mesh>
+      {/* Bottom Fuselage Red Beacon */}
+      <mesh position={[0, -0.21, -0.1]}>
+        <sphereGeometry args={[0.025, 8, 8]} />
+        <meshBasicMaterial ref={beaconMatRef} color="#EF4444" />
       </mesh>
 
-      {/* Windshield / Cockpit */}
-      <mesh position={[0, 0.11, 1.15]} rotation={[0.2, 0, 0]}>
-        <sphereGeometry args={[0.16, 12, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color="#1E293B" roughness={0.05} metalness={0.9} />
-      </mesh>
-
-      {/* Nose cone */}
-      <mesh position={[0, 0, 1.5]} scale={[1, 1, 1.4]}>
-        <sphereGeometry args={[0.18, 16, 16]} />
-        <meshStandardMaterial color="#FFFFFF" roughness={0.15} />
-      </mesh>
-
-      {/* Left Main Wing */}
-      <group position={[-0.85, -0.04, -0.1]} rotation={[0, -0.18, -0.05]}>
-        <mesh castShadow>
-          <boxGeometry args={[1.7, 0.025, 0.4]} />
-          <meshStandardMaterial color="#FFFFFF" roughness={0.15} />
+      {/* Left Wingtip Lights (Solid Red + Strobe) */}
+      <group position={[-1.72, 0.02, -0.2]}>
+        {/* Solid Navigation Red */}
+        <mesh position={[0, 0, 0.05]}>
+          <sphereGeometry args={[0.02, 6, 6]} />
+          <meshBasicMaterial color="#EF4444" />
         </mesh>
-        {/* Wing Tip Accent (Gold) */}
-        <mesh position={[-0.85, 0.05, 0]} rotation={[0, 0, 0.4]}>
-          <boxGeometry args={[0.04, 0.14, 0.25]} />
-          <meshStandardMaterial color="#D4AF37" roughness={0.15} metalness={0.7} />
+        {/* White Strobe */}
+        <mesh position={[0, 0, -0.05]}>
+          <sphereGeometry args={[0.02, 6, 6]} />
+          <meshBasicMaterial ref={strobeMatRef} color="#FFFFFF" />
         </mesh>
       </group>
 
-      {/* Right Main Wing */}
-      <group position={[0.85, -0.04, -0.1]} rotation={[0, 0.18, 0.05]}>
-        <mesh castShadow>
-          <boxGeometry args={[1.7, 0.025, 0.4]} />
-          <meshStandardMaterial color="#FFFFFF" roughness={0.15} />
+      {/* Right Wingtip Lights (Solid Green + Strobe) */}
+      <group position={[1.72, 0.02, -0.2]}>
+        {/* Solid Navigation Green */}
+        <mesh position={[0, 0, 0.05]}>
+          <sphereGeometry args={[0.02, 6, 6]} />
+          <meshBasicMaterial color="#10B981" />
         </mesh>
-        {/* Wing Tip Accent (Gold) */}
-        <mesh position={[0.85, 0.05, 0]} rotation={[0, 0, -0.4]}>
-          <boxGeometry args={[0.04, 0.14, 0.25]} />
-          <meshStandardMaterial color="#D4AF37" roughness={0.15} metalness={0.7} />
-        </mesh>
-      </group>
-
-      {/* Left Engine */}
-      <mesh position={[-0.45, -0.18, 0.2]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.08, 0.07, 0.5, 12]} />
-        <meshStandardMaterial color="#2563EB" roughness={0.2} metalness={0.7} />
-      </mesh>
-      {/* Left Engine Exhaust Bell (Gold) */}
-      <mesh position={[-0.45, -0.18, -0.1]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.07, 0.06, 0.1, 12]} />
-        <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.8} />
-      </mesh>
-      {/* Left Engine Glow */}
-      <mesh position={[-0.45, -0.18, -0.18]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.05, 0.02, 0.08, 8]} />
-        <meshStandardMaterial color="#FF8C00" emissive="#FF4500" emissiveIntensity={3} />
-      </mesh>
-
-      {/* Right Engine */}
-      <mesh position={[0.45, -0.18, 0.2]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.08, 0.07, 0.5, 12]} />
-        <meshStandardMaterial color="#2563EB" roughness={0.2} metalness={0.7} />
-      </mesh>
-      {/* Right Engine Exhaust Bell (Gold) */}
-      <mesh position={[0.45, -0.18, -0.1]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.07, 0.06, 0.1, 12]} />
-        <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.8} />
-      </mesh>
-      {/* Right Engine Glow */}
-      <mesh position={[0.45, -0.18, -0.18]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.05, 0.02, 0.08, 8]} />
-        <meshStandardMaterial color="#FF8C00" emissive="#FF4500" emissiveIntensity={3} />
-      </mesh>
-
-      {/* Tail - Horizontal Stabilizers */}
-      <mesh position={[0, 0.08, -1.2]} rotation={[0, 0, 0]}>
-        <boxGeometry args={[0.9, 0.02, 0.22]} />
-        <meshStandardMaterial color="#FFFFFF" roughness={0.15} />
-      </mesh>
-
-      {/* Tail Fin - Vertical Stabilizer */}
-      <group position={[0, 0.4, -1.25]} rotation={[0.28, 0, 0]}>
-        <mesh castShadow>
-          <boxGeometry args={[0.025, 0.65, 0.32]} />
-          <meshStandardMaterial color="#FFFFFF" roughness={0.15} />
-        </mesh>
-        {/* Tail Fin Accent (Blue and Gold Stripe) */}
-        <mesh position={[0, 0.12, -0.04]} scale={[1.1, 0.55, 0.85]}>
-          <boxGeometry args={[0.026, 0.35, 0.25]} />
-          <meshStandardMaterial color="#2563EB" roughness={0.2} metalness={0.3} />
-        </mesh>
-        <mesh position={[0, -0.12, 0.04]} scale={[1.1, 0.35, 0.85]}>
-          <boxGeometry args={[0.026, 0.35, 0.25]} />
-          <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.7} />
+        {/* White Strobe */}
+        <mesh position={[0, 0, -0.05]}>
+          <sphereGeometry args={[0.02, 6, 6]} />
+          <meshBasicMaterial ref={strobeMatRef} color="#FFFFFF" />
         </mesh>
       </group>
+
+      {/* Tail Fin White Navigation Light */}
+      <mesh position={[0, 0.72, -1.4]}>
+        <sphereGeometry args={[0.02, 6, 6]} />
+        <meshBasicMaterial color="#FFFFFF" />
+      </mesh>
     </group>
   );
 };
 
-// 3D Clouds that will fly past the camera to create speed effect
+// 3D Cloud Cluster (Semi-transparent puffy volumetric shapes)
 const CloudCluster: React.FC<{ position: THREE.Vector3; scale?: number }> = ({ position, scale = 1 }) => {
   return (
     <group position={position} scale={scale}>
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[1.4, 10, 10]} />
-        <meshStandardMaterial color="#EFF6FF" transparent opacity={0.35} roughness={0.9} />
+      <mesh>
+        <sphereGeometry args={[1.5, 16, 16]} />
+        <meshStandardMaterial color="#FFFFFF" transparent opacity={0.75} roughness={0.95} />
       </mesh>
-      <mesh position={[0.8, 0.2, -0.3]}>
-        <sphereGeometry args={[1.0, 8, 8]} />
-        <meshStandardMaterial color="#EFF6FF" transparent opacity={0.35} roughness={0.9} />
+      <mesh position={[0.9, 0.3, -0.4]}>
+        <sphereGeometry args={[1.1, 12, 12]} />
+        <meshStandardMaterial color="#FFFFFF" transparent opacity={0.75} roughness={0.95} />
       </mesh>
-      <mesh position={[-0.8, 0.1, 0.2]}>
-        <sphereGeometry args={[1.1, 8, 8]} />
-        <meshStandardMaterial color="#EFF6FF" transparent opacity={0.35} roughness={0.9} />
+      <mesh position={[-0.9, 0.1, 0.3]}>
+        <sphereGeometry args={[1.2, 12, 12]} />
+        <meshStandardMaterial color="#FFFFFF" transparent opacity={0.75} roughness={0.95} />
       </mesh>
-      <mesh position={[0.2, 0.6, 0.4]}>
-        <sphereGeometry args={[0.9, 8, 8]} />
-        <meshStandardMaterial color="#EFF6FF" transparent opacity={0.35} roughness={0.9} />
+      <mesh position={[0.3, 0.7, 0.5]}>
+        <sphereGeometry args={[1.0, 10, 10]} />
+        <meshStandardMaterial color="#FFFFFF" transparent opacity={0.75} roughness={0.95} />
       </mesh>
     </group>
   );
 };
 
-// Runway with asphalt, yellow dashes, white side lines, and colored edge lights
+// 3D Tree for surrounding field depth
+const LandscapeTree: React.FC<{ position: [number, number, number] }> = ({ position }) => {
+  return (
+    <group position={position}>
+      {/* Trunk */}
+      <mesh position={[0, 0.4, 0]} castShadow>
+        <cylinderGeometry args={[0.08, 0.12, 0.8, 8]} />
+        <meshStandardMaterial color="#78350F" roughness={0.9} />
+      </mesh>
+      {/* Leaves */}
+      <mesh position={[0, 1.0, 0]} castShadow>
+        <sphereGeometry args={[0.45, 10, 10]} />
+        <meshStandardMaterial color="#166534" roughness={0.95} />
+      </mesh>
+      <mesh position={[0.2, 1.3, -0.1]} castShadow>
+        <sphereGeometry args={[0.35, 8, 8]} />
+        <meshStandardMaterial color="#15803D" roughness={0.95} />
+      </mesh>
+    </group>
+  );
+};
+
+// 3D Runway Light Tower for taxi depth
+const LightTower: React.FC<{ position: [number, number, number] }> = ({ position }) => {
+  return (
+    <group position={position}>
+      {/* Pole */}
+      <mesh position={[0, 1.0, 0]} castShadow>
+        <cylinderGeometry args={[0.02, 0.03, 2.0, 6]} />
+        <meshStandardMaterial color="#64748B" metalness={0.7} />
+      </mesh>
+      {/* Lamp Head */}
+      <mesh position={[0, 2.0, 0.05]}>
+        <boxGeometry args={[0.15, 0.08, 0.2]} />
+        <meshStandardMaterial color="#334155" metalness={0.5} />
+      </mesh>
+      {/* Emissive Lamp light */}
+      <mesh position={[0, 1.95, 0.05]}>
+        <sphereGeometry args={[0.05, 8, 8]} />
+        <meshBasicMaterial color="#FEF08A" />
+      </mesh>
+      <pointLight position={[0, 1.8, 0.1]} intensity={0.5} distance={5} color="#FEF08A" />
+    </group>
+  );
+};
+
+// Daytime Runway with concrete-grey paint, yellow dashes, touchdown zones, and surrounding green grass
 const Runway: React.FC = () => {
   const dashedLines = useMemo(() => {
     const lines = [];
@@ -145,45 +160,60 @@ const Runway: React.FC = () => {
     return lines;
   }, []);
 
+  const touchdownZoneLines = useMemo(() => {
+    const stripes = [];
+    for (let x = -1.2; x <= 1.2; x += 0.4) {
+      if (Math.abs(x) > 0.1) {
+        stripes.push(x);
+      }
+    }
+    return stripes;
+  }, []);
+
   const edgeLights = useMemo(() => {
     const lights = [];
-    // Start lights (Green)
-    for (let z = 35; z >= 20; z -= 3) {
-      lights.push({ x: -2.0, z, color: "#10B981", intensity: 1.8 });
-      lights.push({ x: 2.0, z, color: "#10B981", intensity: 1.8 });
+    for (let z = 35; z >= 20; z -= 3.5) {
+      lights.push({ x: -2.0, z, color: "#34D399", intensity: 1.5 });
+      lights.push({ x: 2.0, z, color: "#34D399", intensity: 1.5 });
     }
-    // Runway strip lights (White)
     for (let z = 16; z >= -45; z -= 5) {
-      lights.push({ x: -2.0, z, color: "#E2E8F0", intensity: 1.2 });
-      lights.push({ x: 2.0, z, color: "#E2E8F0", intensity: 1.2 });
+      lights.push({ x: -2.0, z, color: "#F8FAFC", intensity: 1.0 });
+      lights.push({ x: 2.0, z, color: "#F8FAFC", intensity: 1.0 });
     }
-    // End lights (Red)
-    for (let z = -50; z >= -65; z -= 3) {
-      lights.push({ x: -2.0, z, color: "#EF4444", intensity: 1.8 });
-      lights.push({ x: 2.0, z, color: "#EF4444", intensity: 1.8 });
+    for (let z = -50; z >= -65; z -= 3.5) {
+      lights.push({ x: -2.0, z, color: "#F87171", intensity: 1.5 });
+      lights.push({ x: 2.0, z, color: "#F87171", intensity: 1.5 });
     }
     return lights;
   }, []);
 
   return (
     <group>
-      {/* Asphalt Strip */}
+      {/* Concrete-Grey Runway Strip */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -15]} receiveShadow>
         <planeGeometry args={[4.2, 110]} />
-        <meshStandardMaterial color="#1E293B" roughness={0.8} />
+        <meshStandardMaterial color="#475569" roughness={0.7} />
       </mesh>
 
-      {/* Surrounding Field (Dark Slate) */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, -15]} receiveShadow>
+      {/* Surrounding Field (Natural Green Grass) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.015, -15]} receiveShadow>
         <planeGeometry args={[120, 160]} />
-        <meshStandardMaterial color="#0A0F1D" roughness={0.95} />
+        <meshStandardMaterial color="#4D7C0F" roughness={0.9} />
       </mesh>
 
       {/* Center Dashed Lines (Yellow) */}
       {dashedLines.map((z, idx) => (
         <mesh key={`dash-${idx}`} position={[0, 0.005, z]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[0.08, 2.0]} />
-          <meshBasicMaterial color="#EAB308" />
+          <meshBasicMaterial color="#F59E0B" />
+        </mesh>
+      ))}
+
+      {/* Touchdown Zone Markings (White stripes) at runway beginning */}
+      {touchdownZoneLines.map((x, idx) => (
+        <mesh key={`td-${idx}`} position={[x, 0.005, 25]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[0.1, 4.0]} />
+          <meshBasicMaterial color="#F8FAFC" />
         </mesh>
       ))}
 
@@ -203,10 +233,10 @@ const Runway: React.FC = () => {
       {edgeLights.map((light, idx) => (
         <group key={`light-${idx}`} position={[light.x, 0.03, light.z]}>
           <mesh>
-            <sphereGeometry args={[0.035, 8, 8]} />
+            <sphereGeometry args={[0.032, 6, 6]} />
             <meshBasicMaterial color={light.color} />
           </mesh>
-          <pointLight color={light.color} intensity={light.intensity} distance={1.8} />
+          <pointLight color={light.color} intensity={light.intensity} distance={1.5} />
         </group>
       ))}
     </group>
@@ -225,16 +255,17 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
   const startTime = useRef<number | null>(null);
   const cloudsGroupRef = useRef<THREE.Group>(null);
 
+  // Animate values over frame
   useFrame(({ clock, camera }) => {
     if (startTime.current === null) {
       startTime.current = clock.getElapsedTime();
     }
     const elapsed = clock.getElapsedTime() - startTime.current;
 
-    // Movement Calculations
+    // 1. Position & rotation calculations
     let px = 0;
     let py = 0.12;
-    let pz = 30; // Start at runway beginning
+    let pz = 30; // Start Z
     let rx = 0; // pitch
     const ry = Math.PI; // Face -Z
     let rz = 0; // roll
@@ -242,10 +273,10 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
     // Phase 1: Runway Roll (0s to 2.2s)
     if (elapsed < 2.2) {
       const t = elapsed / 2.2;
-      pz = 30 - t * t * 45; // Accelerate Z from 30 to -15
+      pz = 30 - t * t * 45; // Z from 30 to -15
       py = 0.12;
       
-      // Simulating runway engine vibration / rumble
+      // Runway rumble jitter
       const jitter = Math.sin(elapsed * 75) * 0.003;
       px += jitter;
       py += Math.cos(elapsed * 65) * 0.002;
@@ -255,36 +286,32 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
       const t = (elapsed - 2.2) / 2.6; // 0 to 1
       pz = -15 - t * 65; // Z from -15 to -80
       py = 0.12 + Math.sin(t * Math.PI / 2) * 11; // Climb to Y=11
-      rx = -t * 0.25; // Pitch up (max rotation ~14 degrees)
-      
-      // Elegant roll effect (banking slightly right then leveling)
-      rz = Math.sin(t * Math.PI) * 0.08;
+      rx = -t * 0.25; // Pitch up
+      rz = Math.sin(t * Math.PI) * 0.07; // bank roll
     }
-    // Phase 3: Soaring into Clouds (4.8s to 7.5s)
+    // Phase 3: Ascent & Banking (4.8s to 7.5s)
     else if (elapsed < 7.5) {
       const t = (elapsed - 4.8) / 2.7; // 0 to 1
       pz = -80 - t * 100; // Z from -80 to -180
       py = 11 + t * 18; // Climb to Y=29
-      rx = -0.25 + t * 0.13; // Pitch levels off slightly
-      
-      // Opposite bank to straighten out
+      rx = -0.25 + t * 0.13; // pitch levels off
       rz = Math.sin(t * Math.PI) * -0.04;
     }
     // Phase 4: Cruising away (7.5s onwards)
     else {
       const t = (elapsed - 7.5);
-      pz = -180 - t * 50; // Fly into deep distance
+      pz = -180 - t * 50; // Fly into sunset
       py = 29 + t * 5;
       rx = -0.12;
     }
 
-    // Apply translation & rotation to plane
+    // Apply translations to local state
     if (planeRef.current) {
       planeRef.current.position.set(px, py, pz);
       planeRef.current.rotation.set(rx, ry, rz);
     }
 
-    // Camera Interpolation (Lerp) logic for cinematic follow
+    // 2. Camera Interpolation (Lerp) logic for cinematic follow
     const targetCamPos = new THREE.Vector3();
     const targetLookAt = new THREE.Vector3(px, py + 0.35, pz - 1.8);
 
@@ -292,15 +319,15 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
       // Low follow shot from runway rear
       targetCamPos.set(0, 0.75, pz + 4.5);
     } else if (elapsed < 4.8) {
-      // Camera ascends, trailing behind & looking slightly down/forward
+      // Camera ascends, trailing behind & looking down/forward
       const t = (elapsed - 2.2) / 2.6;
       targetCamPos.set(
-        Math.sin(t * Math.PI * 0.4) * 0.8, // subtle horizontal swing
+        Math.sin(t * Math.PI * 0.4) * 0.8,
         0.75 + t * 3.5,
         pz + 4.5 - t * 1.5
       );
     } else if (elapsed < 7.5) {
-      // Slow camera tracking from wide angle as airplane merges with the sky
+      // Wide angle track as plane merges with the sky
       const t = (elapsed - 4.8) / 2.7;
       targetCamPos.set(
         1.5 + t * 3.5,
@@ -308,20 +335,19 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
         pz + 10 + t * 12
       );
     } else {
-      // Static sunset watcher view
+      // Static daytime camera
       targetCamPos.set(5, 15, -130);
     }
 
     camera.position.lerp(targetCamPos, 0.08);
     camera.lookAt(targetLookAt);
 
-    // Animate cloud clusters moving backwards relative to plane to simulate speed
+    // 3. Animate clouds moving backwards relative to plane
     if (cloudsGroupRef.current) {
       cloudsGroupRef.current.children.forEach((cloud) => {
         const speed = elapsed < 2.2 ? (elapsed * 12) : 28;
-        cloud.position.z += speed * 0.016; // Simulate forward velocity
+        cloud.position.z += speed * 0.016;
 
-        // Recycle cloud to the front if it flies past camera
         if (cloud.position.z > camera.position.z + 5) {
           cloud.position.z = pz - 50 - Math.random() * 50;
           cloud.position.x = (Math.random() - 0.5) * 28;
@@ -332,8 +358,8 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
 
     // Position sparkles at engines
     if (planeRef.current) {
-      const leftEngine = new THREE.Vector3(-0.45, -0.18, -0.2);
-      const rightEngine = new THREE.Vector3(0.45, -0.18, -0.2);
+      const leftEngine = new THREE.Vector3(-0.45, -0.16, -0.2);
+      const rightEngine = new THREE.Vector3(0.45, -0.16, -0.2);
       
       leftEngine.applyMatrix4(planeRef.current.matrixWorld);
       rightEngine.applyMatrix4(planeRef.current.matrixWorld);
@@ -346,31 +372,285 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
       }
     }
 
-    // Trigger Success text overlay at 4.2 seconds (fully airborne and soaring)
+    // Trigger Success text overlay at 4.2 seconds (fully airborne)
     if (elapsed > 4.2) {
       onComplete();
     }
+  });
+
+  // Calculate gear progress inside render loop to feed into the Landing Gear animation
+  useFrame((state) => {
+    if (!planeRef.current) return;
+    const elapsed = state.clock.getElapsedTime() - (startTime.current ?? 0);
+    let gp = 0;
+    if (elapsed > 3.1) {
+      gp = Math.min(1.0, (elapsed - 3.1) / 1.2);
+    }
+
+    planeRef.current.traverse((child) => {
+      if (child.name === "nose-gear") {
+        child.position.y = -0.24 + gp * 0.25;
+        child.position.z = 1.1 - gp * 0.1;
+        child.rotation.x = -gp * Math.PI * 0.52;
+        child.scale.setScalar(1 - gp);
+      } else if (child.name === "left-gear") {
+        child.position.x = -0.45 + gp * 0.2;
+        child.position.y = -0.24 + gp * 0.25;
+        child.rotation.z = gp * Math.PI * 0.48;
+        child.scale.setScalar(1 - gp);
+      } else if (child.name === "right-gear") {
+        child.position.x = 0.45 - gp * 0.2;
+        child.position.y = -0.24 + gp * 0.25;
+        child.rotation.z = -gp * Math.PI * 0.48;
+        child.scale.setScalar(1 - gp);
+      }
+    });
   });
 
   return (
     <group>
       {/* 3D Airplane Mesh */}
       <group ref={planeRef}>
-        <AirplaneModel />
+        {/* We render the landing gears inside the model, named so we can animate them dynamically in useFrame */}
+        <group scale={0.65}>
+          {/* Fuselage - Main Body */}
+          <mesh castShadow receiveShadow>
+            <cylinderGeometry args={[0.18, 0.15, 3.2, 20]} />
+            <meshStandardMaterial color="#FAFAFA" roughness={0.08} metalness={0.15} />
+          </mesh>
+
+          {/* Windshield / Cockpit wrap */}
+          <mesh position={[0, 0.11, 1.25]} rotation={[0.22, 0, 0]}>
+            <sphereGeometry args={[0.165, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color="#0F172A" roughness={0.02} metalness={0.9} />
+          </mesh>
+
+          {/* Nose cone */}
+          <mesh position={[0, 0, 1.6]} scale={[1, 1, 1.35]}>
+            <sphereGeometry args={[0.18, 20, 20]} />
+            <meshStandardMaterial color="#FAFAFA" roughness={0.1} />
+          </mesh>
+
+          {/* Individual Passenger Windows (Recessed dark slots) */}
+          {WINDOW_OFFSETS.map((zOffset, idx) => (
+            <group key={`win-${idx}`}>
+              {/* Left Side Window */}
+              <mesh position={[-0.181, 0.04, zOffset]} rotation={[0, -Math.PI / 2, 0]}>
+                <planeGeometry args={[0.035, 0.05]} />
+                <meshStandardMaterial color="#1E293B" roughness={0.05} metalness={0.8} />
+              </mesh>
+              {/* Right Side Window */}
+              <mesh position={[0.181, 0.04, zOffset]} rotation={[0, Math.PI / 2, 0]}>
+                <planeGeometry args={[0.035, 0.05]} />
+                <meshStandardMaterial color="#1E293B" roughness={0.05} metalness={0.8} />
+              </mesh>
+            </group>
+          ))}
+
+          {/* Left Main Wing with Sweep & Dihedral angle (tilt up) */}
+          <group position={[-0.85, -0.04, -0.1]} rotation={[0.08, -0.18, 0.06]}>
+            <mesh castShadow receiveShadow>
+              <boxGeometry args={[1.7, 0.022, 0.42]} />
+              <meshStandardMaterial color="#FAFAFA" roughness={0.12} metalness={0.1} />
+            </mesh>
+            
+            {/* Flap Track Fairings (Underwing canoe pods) */}
+            <mesh position={[-0.3, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
+              <boxGeometry args={[0.035, 0.035, 0.32]} />
+              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
+            </mesh>
+            <mesh position={[-0.55, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
+              <boxGeometry args={[0.035, 0.035, 0.32]} />
+              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
+            </mesh>
+            <mesh position={[-0.8, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
+              <boxGeometry args={[0.035, 0.035, 0.32]} />
+              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
+            </mesh>
+
+            {/* Wing Tip Winglet (Gold Accent) */}
+            <mesh position={[-0.85, 0.08, 0.02]} rotation={[0, 0, 0.45]}>
+              <boxGeometry args={[0.035, 0.18, 0.28]} />
+              <meshStandardMaterial color="#D4AF37" roughness={0.1} metalness={0.7} />
+            </mesh>
+          </group>
+
+          {/* Right Main Wing with Sweep & Dihedral angle (tilt up) */}
+          <group position={[0.85, -0.04, -0.1]} rotation={[0.08, 0.18, -0.06]}>
+            <mesh castShadow receiveShadow>
+              <boxGeometry args={[1.7, 0.022, 0.42]} />
+              <meshStandardMaterial color="#FAFAFA" roughness={0.12} metalness={0.1} />
+            </mesh>
+
+            {/* Flap Track Fairings */}
+            <mesh position={[0.3, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
+              <boxGeometry args={[0.035, 0.035, 0.32]} />
+              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
+            </mesh>
+            <mesh position={[0.55, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
+              <boxGeometry args={[0.035, 0.035, 0.32]} />
+              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
+            </mesh>
+            <mesh position={[0.8, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
+              <boxGeometry args={[0.035, 0.035, 0.32]} />
+              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
+            </mesh>
+
+            {/* Wing Tip Winglet (Gold Accent) */}
+            <mesh position={[0.85, 0.08, 0.02]} rotation={[0, 0, -0.45]}>
+              <boxGeometry args={[0.035, 0.18, 0.28]} />
+              <meshStandardMaterial color="#D4AF37" roughness={0.1} metalness={0.7} />
+            </mesh>
+          </group>
+
+          {/* Left Engine */}
+          <group position={[-0.45, -0.16, 0.2]}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.09, 0.08, 0.55, 16]} />
+              <meshStandardMaterial color="#2563EB" roughness={0.15} metalness={0.6} />
+            </mesh>
+            <mesh position={[0, 0, 0.265]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.075, 0.075, 0.02, 12]} />
+              <meshStandardMaterial color="#0A0A0A" roughness={0.8} />
+            </mesh>
+            <mesh position={[0, 0, 0.27]} rotation={[Math.PI / 2, 0, 0]}>
+              <coneGeometry args={[0.018, 0.06, 10]} />
+              <meshStandardMaterial color="#94A3B8" roughness={0.1} metalness={0.9} />
+            </mesh>
+            <mesh position={[0, 0, -0.275]}>
+              <cylinderGeometry args={[0.075, 0.06, 0.1, 16]} />
+              <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.8} />
+            </mesh>
+            <mesh position={[0, 0, -0.33]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.05, 0.02, 0.08, 8]} />
+              <meshBasicMaterial color="#FFB84D" />
+            </mesh>
+          </group>
+
+          {/* Right Engine */}
+          <group position={[0.45, -0.16, 0.2]}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.09, 0.08, 0.55, 16]} />
+              <meshStandardMaterial color="#2563EB" roughness={0.15} metalness={0.6} />
+            </mesh>
+            <mesh position={[0, 0, 0.265]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.075, 0.075, 0.02, 12]} />
+              <meshStandardMaterial color="#0A0A0A" roughness={0.8} />
+            </mesh>
+            <mesh position={[0, 0, 0.27]} rotation={[Math.PI / 2, 0, 0]}>
+              <coneGeometry args={[0.018, 0.06, 10]} />
+              <meshStandardMaterial color="#94A3B8" roughness={0.1} metalness={0.9} />
+            </mesh>
+            <mesh position={[0, 0, -0.275]}>
+              <cylinderGeometry args={[0.075, 0.06, 0.1, 16]} />
+              <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.8} />
+            </mesh>
+            <mesh position={[0, 0, -0.33]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.05, 0.02, 0.08, 8]} />
+              <meshBasicMaterial color="#FFB84D" />
+            </mesh>
+          </group>
+
+          {/* Tail - Horizontal Stabilizers */}
+          <mesh position={[0, 0.08, -1.25]} rotation={[0.05, 0, 0]}>
+            <boxGeometry args={[0.9, 0.02, 0.22]} />
+            <meshStandardMaterial color="#FAFAFA" roughness={0.15} />
+          </mesh>
+
+          {/* Tail Fin - Vertical Stabilizer */}
+          <group position={[0, 0.42, -1.28]} rotation={[0.26, 0, 0]}>
+            <mesh castShadow>
+              <boxGeometry args={[0.022, 0.65, 0.32]} />
+              <meshStandardMaterial color="#FAFAFA" roughness={0.15} />
+            </mesh>
+            <mesh position={[0, 0.12, -0.04]} scale={[1.1, 0.55, 0.85]}>
+              <boxGeometry args={[0.024, 0.35, 0.25]} />
+              <meshStandardMaterial color="#2563EB" roughness={0.2} metalness={0.3} />
+            </mesh>
+            <mesh position={[0, -0.12, 0.04]} scale={[1.1, 0.35, 0.85]}>
+              <boxGeometry args={[0.024, 0.35, 0.25]} />
+              <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.65} />
+            </mesh>
+          </group>
+
+          {/* LANDING GEAR - Statically declared in render, dynamically transformed in useFrame */}
+          {/* Front Gear */}
+          <group name="nose-gear" position={[0, -0.24, 1.1]}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.015, 0.015, 0.26, 8]} />
+              <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.1} />
+            </mesh>
+            <mesh position={[0, -0.13, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.008, 0.008, 0.07, 6]} />
+              <meshStandardMaterial color="#64748B" metalness={0.9} />
+            </mesh>
+            <mesh position={[-0.035, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+              <cylinderGeometry args={[0.048, 0.048, 0.025, 12]} />
+              <meshStandardMaterial color="#0F172A" roughness={0.7} />
+            </mesh>
+            <mesh position={[0.035, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+              <cylinderGeometry args={[0.048, 0.048, 0.025, 12]} />
+              <meshStandardMaterial color="#0F172A" roughness={0.7} />
+            </mesh>
+          </group>
+
+          {/* Left Main Gear */}
+          <group name="left-gear" position={[-0.45, -0.24, -0.2]}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.018, 0.018, 0.26, 8]} />
+              <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.1} />
+            </mesh>
+            <mesh position={[0, -0.13, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.01, 0.01, 0.1, 6]} />
+              <meshStandardMaterial color="#64748B" metalness={0.9} />
+            </mesh>
+            <mesh position={[-0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
+              <meshStandardMaterial color="#0F172A" roughness={0.7} />
+            </mesh>
+            <mesh position={[0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
+              <meshStandardMaterial color="#0F172A" roughness={0.7} />
+            </mesh>
+          </group>
+
+          {/* Right Main Gear */}
+          <group name="right-gear" position={[0.45, -0.24, -0.2]}>
+            <mesh castShadow>
+              <cylinderGeometry args={[0.018, 0.018, 0.26, 8]} />
+              <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.1} />
+            </mesh>
+            <mesh position={[0, -0.13, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.01, 0.01, 0.1, 6]} />
+              <meshStandardMaterial color="#64748B" metalness={0.9} />
+            </mesh>
+            <mesh position={[-0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
+              <meshStandardMaterial color="#0F172A" roughness={0.7} />
+            </mesh>
+            <mesh position={[0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
+              <meshStandardMaterial color="#0F172A" roughness={0.7} />
+            </mesh>
+          </group>
+
+          {/* Embedded Strobe & Beacon Lights */}
+          <AircraftLights />
+        </group>
       </group>
 
-      {/* Glowing trail particles for left & right engines */}
+      {/* Glowing trail particles for engines */}
       <group ref={leftEngineSparkles}>
-        <Sparkles count={25} scale={[0.1, 0.1, 1.8]} size={1.8} color="#FFB84D" speed={2.5} noise={0.25} />
+        <Sparkles count={15} scale={[0.1, 0.1, 1.2]} size={1.2} color="#FFD580" speed={2.0} noise={0.2} />
       </group>
       <group ref={rightEngineSparkles}>
-        <Sparkles count={25} scale={[0.1, 0.1, 1.8]} size={1.8} color="#FFB84D" speed={2.5} noise={0.25} />
+        <Sparkles count={15} scale={[0.1, 0.1, 1.2]} size={1.2} color="#FFD580" speed={2.0} noise={0.2} />
       </group>
 
       {/* Cloud Environment */}
       <group ref={cloudsGroupRef}>
         {cloudPositions.map((pos, idx) => (
-          <CloudCluster key={`cloud-${idx}`} position={pos} scale={0.7 + Math.random() * 0.8} />
+          <CloudCluster key={`cloud-${idx}`} position={pos} scale={0.75 + Math.random() * 0.9} />
         ))}
       </group>
     </group>
@@ -385,11 +665,11 @@ export const TakeoffScene: React.FC<TakeoffSceneProps> = ({ onComplete }) => {
   // Generate random cloud positions once
   const cloudPositions = useMemo(() => {
     const positions = [];
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 12; i++) {
       positions.push(
         new THREE.Vector3(
-          (Math.random() - 0.5) * 32, // X
-          3 + Math.random() * 15,      // Y
+          (Math.random() - 0.5) * 36, // X
+          3 + Math.random() * 16,      // Y
           -10 - Math.random() * 70     // Z
         )
       );
@@ -398,24 +678,43 @@ export const TakeoffScene: React.FC<TakeoffSceneProps> = ({ onComplete }) => {
   }, []);
 
   return (
-    <div className="w-full h-full bg-gradient-to-b from-[#0F172A] via-[#1E1B4B] to-[#311042] relative rounded-3xl overflow-hidden shadow-inner">
+    <div className="w-full h-full bg-gradient-to-b from-[#BAE6FD] via-[#E0F2FE] to-[#FFFBEB] relative rounded-3xl overflow-hidden shadow-inner">
       <Canvas
         camera={{ position: [0, 1.0, 36], fov: 50 }}
         gl={{ antialias: true, alpha: false }}
         shadows
       >
-        {/* Lights */}
-        <ambientLight intensity={0.4} />
-        <pointLight position={[10, 20, 10]} intensity={1.5} color="#FAF5E6" />
-        <directionalLight position={[-5, 8, 5]} intensity={1.0} color="#3B82F6" />
+        {/* Lights (Bright Daylight Setup) */}
+        <ambientLight intensity={0.9} color="#EFF6FF" />
+        
+        {/* Warm daylight sun casting crisp shadows */}
+        <directionalLight 
+          position={[-15, 20, 15]} 
+          intensity={1.8} 
+          color="#FFFBEB" 
+          castShadow
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+        />
 
-        {/* Sunset Glow Light Source */}
-        <directionalLight position={[0, 4, -80]} intensity={3.5} color="#FF8C00" />
-
-        {/* Ambient environment stars */}
-        <Stars radius={100} depth={50} count={3000} factor={4} saturation={0.5} fade speed={1} />
+        {/* Ambient Ground Bounce Light (Green bounce from field grass) */}
+        <directionalLight position={[0, -5, 0]} intensity={0.65} color="#DCFCE7" />
 
         <Runway />
+
+        {/* Add Light Towers and Trees along the runway to add realistic depth during roll */}
+        <LightTower position={[-2.4, 0, 20]} />
+        <LightTower position={[2.4, 0, 0]} />
+        <LightTower position={[-2.4, 0, -20]} />
+        <LightTower position={[2.4, 0, -40]} />
+
+        <LandscapeTree position={[-6, 0, 28]} />
+        <LandscapeTree position={[7, 0, 25]} />
+        <LandscapeTree position={[-8, 0, 10]} />
+        <LandscapeTree position={[8, 0, -5]} />
+        <LandscapeTree position={[-7, 0, -18]} />
+        <LandscapeTree position={[9, 0, -32]} />
+        <LandscapeTree position={[-9, 0, -45]} />
 
         <FlightController onComplete={onComplete} cloudPositions={cloudPositions} />
       </Canvas>
