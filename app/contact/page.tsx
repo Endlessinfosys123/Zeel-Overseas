@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Mail, MapPin, Check, Send, PhoneCall, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Send, PhoneCall, Clock } from "lucide-react";
 import SplitText from "@/components/ui/SplitText";
+import ContactSuccessAnimation from "@/components/3d/ContactSuccessAnimation";
 
 // Define Form validation schema with Zod
 const contactSchema = z.object({
@@ -14,13 +15,15 @@ const contactSchema = z.object({
   email: z.string().email({ message: "Provide a valid email address." }),
   phone: z.string().min(10, { message: "Phone number must be at least 10 digits." }),
   visaInterest: z.string().min(1, { message: "Please select a visa stream." }),
+  destination: z.string().min(1, { message: "Please select a destination country." }),
   message: z.string().min(5, { message: "Message must contain at least 5 characters." }),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function Contact() {
-  const [submitState, setSubmitState] = useState<"idle" | "loading" | "success">("idle");
+  const [submitState, setSubmitState] = useState<"idle" | "loading" | "animating">("idle");
+  const [submittedData, setSubmittedData] = useState<ContactFormData | null>(null);
 
   const {
     register,
@@ -35,11 +38,15 @@ export default function Contact() {
     console.log("Form submitted:", data);
     setSubmitState("loading");
     // Mock network request delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setSubmitState("success");
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setSubmittedData(data);
+    setSubmitState("animating");
+  };
+
+  const handleReset = () => {
+    setSubmitState("idle");
+    setSubmittedData(null);
     reset();
-    // Reset success state after a few seconds
-    setTimeout(() => setSubmitState("idle"), 5000);
   };
 
   return (
@@ -66,13 +73,22 @@ export default function Contact() {
       {/* 2. SPLIT LAYOUT FORM & INFO */}
       <section className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-24 z-10 relative">
         
-        {/* Left Column: Form Wrapper */}
-        <div className="lg:col-span-7 bg-white/70 backdrop-blur-md border border-brand-gray-medium/55 p-8 md:p-10 rounded-3xl shadow-sm">
-          <h2 className="text-2xl font-display font-black text-brand-charcoal mb-6 border-b border-brand-gray-medium/30 pb-4">
-            Consultation Case File
-          </h2>
+        {/* Left Column: Form Wrapper / Success Animation Wrapper */}
+        <div className="lg:col-span-7 bg-white/70 backdrop-blur-md border border-brand-gray-medium/55 p-8 md:p-10 rounded-3xl shadow-sm overflow-hidden min-h-[500px] flex flex-col justify-center">
+          <AnimatePresence mode="wait">
+            {submitState !== "animating" ? (
+              <motion.div
+                key="contact-form-key"
+                initial={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="w-full"
+              >
+                <h2 className="text-2xl font-display font-black text-brand-charcoal mb-6 border-b border-brand-gray-medium/30 pb-4">
+                  Consultation Case File
+                </h2>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Name */}
               <div className="flex flex-col space-y-2">
@@ -166,7 +182,10 @@ export default function Contact() {
               </label>
               <select
                 id="destination"
-                className="w-full bg-white/60 border border-brand-gray-medium/60 text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body cursor-pointer"
+                {...register("destination")}
+                className={`w-full bg-white/60 border ${
+                  errors.destination ? "border-red-500" : "border-brand-gray-medium/60"
+                } text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body cursor-pointer`}
               >
                 <option value="">Select Destination</option>
                 <option value="Canada">Canada</option>
@@ -177,6 +196,9 @@ export default function Contact() {
                 <option value="New Zealand">New Zealand</option>
                 <option value="Other">Other</option>
               </select>
+              {errors.destination && (
+                <span className="text-xs font-semibold text-red-500">{errors.destination.message}</span>
+              )}
             </div>
 
             {/* Message */}
@@ -230,23 +252,29 @@ export default function Contact() {
                     <span>Auditing Submission...</span>
                   </motion.span>
                 )}
-
-                {submitState === "success" && (
-                  <motion.span
-                    key="success"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="inline-flex items-center space-x-2 text-green-300 font-semibold"
-                  >
-                    <Check className="w-5 h-5 text-green-300" />
-                    <span>File Submitted Successfully!</span>
-                  </motion.span>
-                )}
               </AnimatePresence>
             </button>
           </form>
-        </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="success-animation-key"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="w-full h-full"
+          >
+            {submittedData && (
+              <ContactSuccessAnimation
+                formData={submittedData}
+                onReset={handleReset}
+              />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
 
         {/* Right Column: Office info & map */}
         <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-28">
