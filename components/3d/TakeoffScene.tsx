@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sparkles } from "@react-three/drei";
+import { Sparkles, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
-// Static window offsets for the passenger airliner fuselage
-const WINDOW_OFFSETS = [-0.85, -0.69, -0.53, -0.37, -0.21, -0.05, 0.11, 0.27, 0.43, 0.59, 0.75];
 
 // Flashing Beacon and Strobe Lights helper component
 const AircraftLights: React.FC = () => {
@@ -33,12 +31,12 @@ const AircraftLights: React.FC = () => {
   return (
     <group>
       {/* Top Fuselage Red Beacon */}
-      <mesh position={[0, 0.21, -0.1]}>
+      <mesh position={[0, 0.24, -0.1]}>
         <sphereGeometry args={[0.025, 8, 8]} />
         <meshBasicMaterial ref={beaconMatRef} color="#EF4444" />
       </mesh>
       {/* Bottom Fuselage Red Beacon */}
-      <mesh position={[0, -0.21, -0.1]}>
+      <mesh position={[0, -0.24, -0.1]}>
         <sphereGeometry args={[0.025, 8, 8]} />
         <meshBasicMaterial ref={beaconMatRef} color="#EF4444" />
       </mesh>
@@ -243,6 +241,55 @@ const Runway: React.FC = () => {
   );
 };
 
+// Realistic Airplane Loader using public GLB model
+const RealisticAirplane: React.FC = () => {
+  const { scene } = useGLTF("/models/airplane.glb");
+
+  // Clone the scene to ensure isolated modifications
+  const clonedScene = useMemo(() => scene.clone(), [scene]);
+
+  // Normalize, scale, and center the airplane to fit 3.2 units perfectly
+  useEffect(() => {
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    
+    // Target length is 3.2 units along Z (which matches our camera coordinates)
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const scaleFactor = 3.2 / maxDim;
+    
+    clonedScene.scale.setScalar(scaleFactor);
+
+    // Center the pivot point of the airplane
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    clonedScene.position.sub(center.multiplyScalar(scaleFactor));
+
+    // Make all materials shiny & responsive to lighting
+    clonedScene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        
+        if (mesh.material && (mesh.material as THREE.MeshStandardMaterial).isMeshStandardMaterial) {
+          const mat = mesh.material as THREE.MeshStandardMaterial;
+          mat.roughness = 0.12;
+          mat.metalness = 0.25;
+        }
+      }
+    });
+  }, [clonedScene]);
+
+  return (
+    <group>
+      <primitive object={clonedScene} />
+      {/* Overlay strobe/beacon lights aligned with the normalized airplane coordinates */}
+      <AircraftLights />
+    </group>
+  );
+};
+
 interface FlightControllerProps {
   onComplete: () => void;
   cloudPositions: THREE.Vector3[];
@@ -300,7 +347,7 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
     // Phase 4: Cruising away (7.5s onwards)
     else {
       const t = (elapsed - 7.5);
-      pz = -180 - t * 50; // Fly into sunset
+      pz = -180 - t * 50; // Fly into distance
       py = 29 + t * 5;
       rx = -0.12;
     }
@@ -388,20 +435,10 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
     }
 
     planeRef.current.traverse((child) => {
-      if (child.name === "nose-gear") {
-        child.position.y = -0.24 + gp * 0.25;
-        child.position.z = 1.1 - gp * 0.1;
-        child.rotation.x = -gp * Math.PI * 0.52;
-        child.scale.setScalar(1 - gp);
-      } else if (child.name === "left-gear") {
-        child.position.x = -0.45 + gp * 0.2;
-        child.position.y = -0.24 + gp * 0.25;
-        child.rotation.z = gp * Math.PI * 0.48;
-        child.scale.setScalar(1 - gp);
-      } else if (child.name === "right-gear") {
-        child.position.x = 0.45 - gp * 0.2;
-        child.position.y = -0.24 + gp * 0.25;
-        child.rotation.z = -gp * Math.PI * 0.48;
+      const name = child.name.toLowerCase();
+      // Retract any landing gears, tires, struts, or wheels found in the imported GLB
+      if (name.includes("gear") || name.includes("wheel") || name.includes("strut") || name.includes("tire")) {
+        child.position.y = -gp * 0.35;
         child.scale.setScalar(1 - gp);
       }
     });
@@ -411,232 +448,7 @@ const FlightController: React.FC<FlightControllerProps> = ({ onComplete, cloudPo
     <group>
       {/* 3D Airplane Mesh */}
       <group ref={planeRef}>
-        {/* We render the landing gears inside the model, named so we can animate them dynamically in useFrame */}
-        <group scale={0.65}>
-          {/* Fuselage - Main Body */}
-          <mesh castShadow receiveShadow>
-            <cylinderGeometry args={[0.18, 0.15, 3.2, 20]} />
-            <meshStandardMaterial color="#FAFAFA" roughness={0.08} metalness={0.15} />
-          </mesh>
-
-          {/* Windshield / Cockpit wrap */}
-          <mesh position={[0, 0.11, 1.25]} rotation={[0.22, 0, 0]}>
-            <sphereGeometry args={[0.165, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-            <meshStandardMaterial color="#0F172A" roughness={0.02} metalness={0.9} />
-          </mesh>
-
-          {/* Nose cone */}
-          <mesh position={[0, 0, 1.6]} scale={[1, 1, 1.35]}>
-            <sphereGeometry args={[0.18, 20, 20]} />
-            <meshStandardMaterial color="#FAFAFA" roughness={0.1} />
-          </mesh>
-
-          {/* Individual Passenger Windows (Recessed dark slots) */}
-          {WINDOW_OFFSETS.map((zOffset, idx) => (
-            <group key={`win-${idx}`}>
-              {/* Left Side Window */}
-              <mesh position={[-0.181, 0.04, zOffset]} rotation={[0, -Math.PI / 2, 0]}>
-                <planeGeometry args={[0.035, 0.05]} />
-                <meshStandardMaterial color="#1E293B" roughness={0.05} metalness={0.8} />
-              </mesh>
-              {/* Right Side Window */}
-              <mesh position={[0.181, 0.04, zOffset]} rotation={[0, Math.PI / 2, 0]}>
-                <planeGeometry args={[0.035, 0.05]} />
-                <meshStandardMaterial color="#1E293B" roughness={0.05} metalness={0.8} />
-              </mesh>
-            </group>
-          ))}
-
-          {/* Left Main Wing with Sweep & Dihedral angle (tilt up) */}
-          <group position={[-0.85, -0.04, -0.1]} rotation={[0.08, -0.18, 0.06]}>
-            <mesh castShadow receiveShadow>
-              <boxGeometry args={[1.7, 0.022, 0.42]} />
-              <meshStandardMaterial color="#FAFAFA" roughness={0.12} metalness={0.1} />
-            </mesh>
-            
-            {/* Flap Track Fairings (Underwing canoe pods) */}
-            <mesh position={[-0.3, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
-              <boxGeometry args={[0.035, 0.035, 0.32]} />
-              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
-            </mesh>
-            <mesh position={[-0.55, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
-              <boxGeometry args={[0.035, 0.035, 0.32]} />
-              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
-            </mesh>
-            <mesh position={[-0.8, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
-              <boxGeometry args={[0.035, 0.035, 0.32]} />
-              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
-            </mesh>
-
-            {/* Wing Tip Winglet (Gold Accent) */}
-            <mesh position={[-0.85, 0.08, 0.02]} rotation={[0, 0, 0.45]}>
-              <boxGeometry args={[0.035, 0.18, 0.28]} />
-              <meshStandardMaterial color="#D4AF37" roughness={0.1} metalness={0.7} />
-            </mesh>
-          </group>
-
-          {/* Right Main Wing with Sweep & Dihedral angle (tilt up) */}
-          <group position={[0.85, -0.04, -0.1]} rotation={[0.08, 0.18, -0.06]}>
-            <mesh castShadow receiveShadow>
-              <boxGeometry args={[1.7, 0.022, 0.42]} />
-              <meshStandardMaterial color="#FAFAFA" roughness={0.12} metalness={0.1} />
-            </mesh>
-
-            {/* Flap Track Fairings */}
-            <mesh position={[0.3, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
-              <boxGeometry args={[0.035, 0.035, 0.32]} />
-              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
-            </mesh>
-            <mesh position={[0.55, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
-              <boxGeometry args={[0.035, 0.035, 0.32]} />
-              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
-            </mesh>
-            <mesh position={[0.8, -0.03, -0.18]} rotation={[-0.05, 0, 0]}>
-              <boxGeometry args={[0.035, 0.035, 0.32]} />
-              <meshStandardMaterial color="#E2E8F0" roughness={0.1} />
-            </mesh>
-
-            {/* Wing Tip Winglet (Gold Accent) */}
-            <mesh position={[0.85, 0.08, 0.02]} rotation={[0, 0, -0.45]}>
-              <boxGeometry args={[0.035, 0.18, 0.28]} />
-              <meshStandardMaterial color="#D4AF37" roughness={0.1} metalness={0.7} />
-            </mesh>
-          </group>
-
-          {/* Left Engine */}
-          <group position={[-0.45, -0.16, 0.2]}>
-            <mesh castShadow>
-              <cylinderGeometry args={[0.09, 0.08, 0.55, 16]} />
-              <meshStandardMaterial color="#2563EB" roughness={0.15} metalness={0.6} />
-            </mesh>
-            <mesh position={[0, 0, 0.265]} rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.075, 0.075, 0.02, 12]} />
-              <meshStandardMaterial color="#0A0A0A" roughness={0.8} />
-            </mesh>
-            <mesh position={[0, 0, 0.27]} rotation={[Math.PI / 2, 0, 0]}>
-              <coneGeometry args={[0.018, 0.06, 10]} />
-              <meshStandardMaterial color="#94A3B8" roughness={0.1} metalness={0.9} />
-            </mesh>
-            <mesh position={[0, 0, -0.275]}>
-              <cylinderGeometry args={[0.075, 0.06, 0.1, 16]} />
-              <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.8} />
-            </mesh>
-            <mesh position={[0, 0, -0.33]} rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.05, 0.02, 0.08, 8]} />
-              <meshBasicMaterial color="#FFB84D" />
-            </mesh>
-          </group>
-
-          {/* Right Engine */}
-          <group position={[0.45, -0.16, 0.2]}>
-            <mesh castShadow>
-              <cylinderGeometry args={[0.09, 0.08, 0.55, 16]} />
-              <meshStandardMaterial color="#2563EB" roughness={0.15} metalness={0.6} />
-            </mesh>
-            <mesh position={[0, 0, 0.265]} rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.075, 0.075, 0.02, 12]} />
-              <meshStandardMaterial color="#0A0A0A" roughness={0.8} />
-            </mesh>
-            <mesh position={[0, 0, 0.27]} rotation={[Math.PI / 2, 0, 0]}>
-              <coneGeometry args={[0.018, 0.06, 10]} />
-              <meshStandardMaterial color="#94A3B8" roughness={0.1} metalness={0.9} />
-            </mesh>
-            <mesh position={[0, 0, -0.275]}>
-              <cylinderGeometry args={[0.075, 0.06, 0.1, 16]} />
-              <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.8} />
-            </mesh>
-            <mesh position={[0, 0, -0.33]} rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.05, 0.02, 0.08, 8]} />
-              <meshBasicMaterial color="#FFB84D" />
-            </mesh>
-          </group>
-
-          {/* Tail - Horizontal Stabilizers */}
-          <mesh position={[0, 0.08, -1.25]} rotation={[0.05, 0, 0]}>
-            <boxGeometry args={[0.9, 0.02, 0.22]} />
-            <meshStandardMaterial color="#FAFAFA" roughness={0.15} />
-          </mesh>
-
-          {/* Tail Fin - Vertical Stabilizer */}
-          <group position={[0, 0.42, -1.28]} rotation={[0.26, 0, 0]}>
-            <mesh castShadow>
-              <boxGeometry args={[0.022, 0.65, 0.32]} />
-              <meshStandardMaterial color="#FAFAFA" roughness={0.15} />
-            </mesh>
-            <mesh position={[0, 0.12, -0.04]} scale={[1.1, 0.55, 0.85]}>
-              <boxGeometry args={[0.024, 0.35, 0.25]} />
-              <meshStandardMaterial color="#2563EB" roughness={0.2} metalness={0.3} />
-            </mesh>
-            <mesh position={[0, -0.12, 0.04]} scale={[1.1, 0.35, 0.85]}>
-              <boxGeometry args={[0.024, 0.35, 0.25]} />
-              <meshStandardMaterial color="#D4AF37" roughness={0.2} metalness={0.65} />
-            </mesh>
-          </group>
-
-          {/* LANDING GEAR - Statically declared in render, dynamically transformed in useFrame */}
-          {/* Front Gear */}
-          <group name="nose-gear" position={[0, -0.24, 1.1]}>
-            <mesh castShadow>
-              <cylinderGeometry args={[0.015, 0.015, 0.26, 8]} />
-              <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.1} />
-            </mesh>
-            <mesh position={[0, -0.13, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.008, 0.008, 0.07, 6]} />
-              <meshStandardMaterial color="#64748B" metalness={0.9} />
-            </mesh>
-            <mesh position={[-0.035, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-              <cylinderGeometry args={[0.048, 0.048, 0.025, 12]} />
-              <meshStandardMaterial color="#0F172A" roughness={0.7} />
-            </mesh>
-            <mesh position={[0.035, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-              <cylinderGeometry args={[0.048, 0.048, 0.025, 12]} />
-              <meshStandardMaterial color="#0F172A" roughness={0.7} />
-            </mesh>
-          </group>
-
-          {/* Left Main Gear */}
-          <group name="left-gear" position={[-0.45, -0.24, -0.2]}>
-            <mesh castShadow>
-              <cylinderGeometry args={[0.018, 0.018, 0.26, 8]} />
-              <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.1} />
-            </mesh>
-            <mesh position={[0, -0.13, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.01, 0.01, 0.1, 6]} />
-              <meshStandardMaterial color="#64748B" metalness={0.9} />
-            </mesh>
-            <mesh position={[-0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
-              <meshStandardMaterial color="#0F172A" roughness={0.7} />
-            </mesh>
-            <mesh position={[0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
-              <meshStandardMaterial color="#0F172A" roughness={0.7} />
-            </mesh>
-          </group>
-
-          {/* Right Main Gear */}
-          <group name="right-gear" position={[0.45, -0.24, -0.2]}>
-            <mesh castShadow>
-              <cylinderGeometry args={[0.018, 0.018, 0.26, 8]} />
-              <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.1} />
-            </mesh>
-            <mesh position={[0, -0.13, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.01, 0.01, 0.1, 6]} />
-              <meshStandardMaterial color="#64748B" metalness={0.9} />
-            </mesh>
-            <mesh position={[-0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
-              <meshStandardMaterial color="#0F172A" roughness={0.7} />
-            </mesh>
-            <mesh position={[0.048, -0.13, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-              <cylinderGeometry args={[0.055, 0.055, 0.035, 12]} />
-              <meshStandardMaterial color="#0F172A" roughness={0.7} />
-            </mesh>
-          </group>
-
-          {/* Embedded Strobe & Beacon Lights */}
-          <AircraftLights />
-        </group>
+        <RealisticAirplane />
       </group>
 
       {/* Glowing trail particles for engines */}
@@ -716,10 +528,15 @@ export const TakeoffScene: React.FC<TakeoffSceneProps> = ({ onComplete }) => {
         <LandscapeTree position={[9, 0, -32]} />
         <LandscapeTree position={[-9, 0, -45]} />
 
-        <FlightController onComplete={onComplete} cloudPositions={cloudPositions} />
+        <Suspense fallback={null}>
+          <FlightController onComplete={onComplete} cloudPositions={cloudPositions} />
+        </Suspense>
       </Canvas>
     </div>
   );
 };
+
+// Preload the GLB airplane model to make transitions instant
+useGLTF.preload("/models/airplane.glb");
 
 export default TakeoffScene;
