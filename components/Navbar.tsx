@@ -160,8 +160,8 @@ export const Navbar: React.FC = () => {
               <span className="text-[10px] text-brand-gray-dark uppercase tracking-widest font-display block mb-1">
                 CONTACT DIRECT
               </span>
-              <a href="tel:+919876543210" className="text-sm font-bold text-brand-charcoal block hover:text-brand-blue">
-                +91 98765 43210
+              <a href="tel:+919727407050" className="text-sm font-bold text-brand-charcoal block hover:text-brand-blue">
+                +91 97274 07050
               </a>
               <a href="mailto:info@zeeloverseas.com" className="text-sm font-bold text-brand-charcoal block hover:text-brand-blue">
                 info@zeeloverseas.com

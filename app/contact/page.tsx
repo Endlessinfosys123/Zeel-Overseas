@@ -142,7 +142,7 @@ export default function Contact() {
                         className={`w-full bg-white/60 border ${
                           errors.phone ? "border-red-500" : "border-brand-gray-medium/60"
                         } text-sm px-4 py-3.5 rounded-xl outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all font-body`}
-                        placeholder="+91 98765 43210"
+                        placeholder="+91 97274 07050"
                       />
                       {errors.phone && (
                         <span className="text-xs font-semibold text-red-500">{errors.phone.message}</span>
@@ -289,36 +289,36 @@ export default function Contact() {
                 <MapPin className="w-5 h-5 text-brand-blue shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold text-brand-charcoal block">Zeel Overseas Address</span>
-                  <span>[Zeel Overseas office address, Ahmedabad]</span>
+                  <span>B-403/404, The Landmark, Near Kansar Hotel, Kudasan, Gandhinagar, Gujarat - 382421.</span>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-brand-gold shrink-0" />
-                <span className="font-semibold text-brand-charcoal">
-                  Phone: [Phone Number]
-                </span>
+                <a href="tel:+919727407050" className="font-semibold text-brand-charcoal hover:text-brand-blue">
+                  +91 97274 07050
+                </a>
               </div>
 
               <div className="flex items-center space-x-3">
                 <PhoneCall className="w-5 h-5 text-[#25D366] shrink-0" />
-                <span className="font-semibold text-brand-charcoal">
-                  WhatsApp: [WhatsApp Number]
-                </span>
+                <a href="https://wa.me/919727407050?text=Hi%20Zeel%20Overseas,%20I%20am%20interested%20in%20a%20visa%20consultation." target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-charcoal hover:text-brand-blue">
+                  +91 97274 07050
+                </a>
               </div>
 
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-brand-blue shrink-0" />
-                <span className="font-semibold text-brand-charcoal">
-                  Email: [Email Address]
-                </span>
+                <a href="mailto:info@zeeloverseas.com" className="font-semibold text-brand-charcoal hover:text-brand-blue">
+                  info@zeeloverseas.com
+                </a>
               </div>
 
               <div className="flex items-start space-x-3 border-t border-brand-gray-medium/30 pt-4 text-xs">
                 <Clock className="w-4 h-4 text-brand-gray-dark mt-0.5 shrink-0" />
                 <div>
                   <span className="font-semibold text-brand-charcoal block">Office Hours:</span>
-                  <span>[Office Hours]</span>
+                  <span>Mon To Sat, 9:00 AM To 6:00 PM</span>
                 </div>
               </div>
             </div>
@@ -421,7 +421,7 @@ export default function Contact() {
 
       {/* 3. WHATSAPP FLOATING ACTION BUTTON (Pulse Ripple animation) */}
       <a
-        href="https://wa.me/919876543210?text=Hi%20Zeel%20Overseas,%20I%20am%20interested%20in%20a%20visa%20consultation."
+        href="https://wa.me/919727407050?text=Hi%20Zeel%20Overseas,%20I%20am%20interested%20in%20a%20visa%20consultation."
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-8 right-8 z-[9990] w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-2xl transition-transform hover:scale-110 cursor-pointer"
