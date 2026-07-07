@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Zeel Overseas | Immigration & Visa Consultancy, Ahmedabad",
-  description: "Learn about Zeel Overseas, Ahmedabad's trusted immigration and visa consultancy — our mission, values, and the team helping clients build their future abroad.",
+  title: "About Zeel Overseas | Immigration Consultants in Ahmedabad",
+  description: "Learn about Zeel Overseas — Ahmedabad's immigration and visa consultancy built on transparent guidance, complete documentation support, and genuine student and client success.",
 };
 
 export default function AboutLayout({

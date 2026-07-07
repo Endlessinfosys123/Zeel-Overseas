@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Zeel Overseas | Book a Free Visa Consultation",
-  description: "Get in touch with Zeel Overseas for expert visa and immigration advice. Book a free consultation online or visit our Ahmedabad office.",
+  title: "Contact Zeel Overseas | Book a Free Visa Consultation in Ahmedabad",
+  description: "Get in touch with Zeel Overseas for expert immigration and visa consultancy in Ahmedabad. Book your free consultation today — call, WhatsApp, or visit our office.",
 };
 
 export default function ContactLayout({

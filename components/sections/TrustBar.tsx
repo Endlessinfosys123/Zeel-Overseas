@@ -106,34 +106,44 @@ export const TrustBar: React.FC = () => {
         </div>
 
         {/* Stats Count Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center pt-8 border-t border-brand-gray-medium/20">
-          <div className="flex flex-col items-center">
-            <div className="flex items-baseline font-display font-black text-brand-blue text-5xl md:text-6xl tracking-tight mb-2">
-              <span className="stat-number" data-target="500">0</span>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center pt-8 border-t border-brand-gray-medium/20">
+          <div className="flex flex-col items-center p-4">
+            <div className="flex items-baseline font-display font-black text-brand-blue text-4xl md:text-5xl lg:text-6xl tracking-tight mb-2">
+              <span className="stat-number" data-target="300">0</span>
               <span>+</span>
             </div>
-            <span className="text-sm font-display font-bold text-brand-charcoal/70 uppercase tracking-widest">
-              Visas Fully Approved
+            <span className="text-[10px] md:text-xs font-display font-bold text-brand-charcoal/70 uppercase tracking-widest">
+              Visas Approved
             </span>
           </div>
 
-          <div className="flex flex-col items-center border-y md:border-y-0 md:border-x border-brand-gray-medium/30 py-6 md:py-0">
-            <div className="flex items-baseline font-display font-black text-brand-gold text-5xl md:text-6xl tracking-tight mb-2">
-              <span className="stat-number" data-target="98">0</span>
+          <div className="flex flex-col items-center p-4 border-l border-brand-gray-medium/20">
+            <div className="flex items-baseline font-display font-black text-brand-gold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-2">
+              <span className="stat-number" data-target="9">0</span>
+              <span>+</span>
+            </div>
+            <span className="text-[10px] md:text-xs font-display font-bold text-brand-charcoal/70 uppercase tracking-widest">
+              Years of Experience
+            </span>
+          </div>
+
+          <div className="flex flex-col items-center p-4 border-t border-brand-gray-medium/20 lg:border-t-0 lg:border-l">
+            <div className="flex items-baseline font-display font-black text-brand-blue text-4xl md:text-5xl lg:text-6xl tracking-tight mb-2">
+              <span className="stat-number" data-target="99">0</span>
               <span>%</span>
             </div>
-            <span className="text-sm font-display font-bold text-brand-charcoal/70 uppercase tracking-widest">
-              Overall Success Rate
+            <span className="text-[10px] md:text-xs font-display font-bold text-brand-charcoal/70 uppercase tracking-widest">
+              Success Rate
             </span>
           </div>
 
-          <div className="flex flex-col items-center">
-            <div className="flex items-baseline font-display font-black text-brand-blue text-5xl md:text-6xl tracking-tight mb-2">
-              <span className="stat-number" data-target="15">0</span>
+          <div className="flex flex-col items-center p-4 border-t border-l border-brand-gray-medium/20 lg:border-t-0">
+            <div className="flex items-baseline font-display font-black text-brand-gold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-2">
+              <span className="stat-number" data-target="10">0</span>
               <span>+</span>
             </div>
-            <span className="text-sm font-display font-bold text-brand-charcoal/70 uppercase tracking-widest">
-              Target Countries Specialization
+            <span className="text-[10px] md:text-xs font-display font-bold text-brand-charcoal/70 uppercase tracking-widest">
+              Countries Covered
             </span>
           </div>
         </div>

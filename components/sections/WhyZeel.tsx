@@ -13,26 +13,26 @@ gsap.registerPlugin(ScrollTrigger);
 const differentiators = [
   {
     icon: <BookOpen className="w-8 h-8 text-brand-blue" />,
-    title: "Expert Counselors",
-    description: "Our certified practitioners review global policies weekly. You receive advisory aligned to current embassy audit rules, ensuring maximum case compliance.",
-    badge: "KNOWLEDGE"
+    title: "Personalized Counseling",
+    description: "No two applications are the same; we assess your profile before recommending a country or pathway.",
+    badge: "TAILORED"
   },
   {
     icon: <FileCheck className="w-8 h-8 text-brand-gold" />,
-    title: "Documentation Support",
-    description: "We provide forensic reviews of SOPs, sponsor letters, and financial affidavits. Eliminating syntax errors and document mismatch risks before embassy lodgment.",
-    badge: "ZERO ERRORS"
+    title: "Complete Documentation Support",
+    description: "From SOPs to financial proofs, we prepare every document to embassy standard.",
+    badge: "EMBASSY READY"
   },
   {
     icon: <Shield className="w-8 h-8 text-brand-blue" />,
-    title: "High Success Rate",
-    description: "Maintaining a 98% success rate across study and residency permits. We build robust application files that withstand stringent case officer evaluations.",
-    badge: "TRUSTED"
+    title: "High Approval Track Record",
+    description: "Our process is built around getting files right the first time, minimizing rejections and delays.",
+    badge: "SUCCESS DRIVEN"
   },
   {
     icon: <CheckCircle className="w-8 h-8 text-brand-gold" />,
     title: "End-to-End Guidance",
-    description: "From academic admissions and GIC banking accounts to mock interview prep and pre-departure setups. We handle the entire roadmap from day one.",
+    description: "We stay with you from first consultation to visa stamp and pre-departure briefing.",
     badge: "COMPLETE"
   }
 ];

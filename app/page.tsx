@@ -1,11 +1,12 @@
 import React from "react";
 import HeroSection from "@/components/sections/HeroSection";
 import TrustBar from "@/components/sections/TrustBar";
+import IntroOverview from "@/components/sections/IntroOverview";
 import ServicesPreview from "@/components/sections/ServicesPreview";
 import WhyZeel from "@/components/sections/WhyZeel";
 import ProcessTimeline from "@/components/sections/ProcessTimeline";
-import TestimonialCarousel from "@/components/sections/TestimonialCarousel";
 import CountryGrid from "@/components/sections/CountryGrid";
+import TestimonialCarousel from "@/components/sections/TestimonialCarousel";
 import HomeFAQ from "@/components/sections/HomeFAQ";
 import FinalCTA from "@/components/sections/FinalCTA";
 
@@ -17,6 +18,9 @@ export default function Home() {
       
       {/* Auto-scrolling countries marquee + Scroll count stats */}
       <TrustBar />
+
+      {/* Intro overview of Why Families Trust Zeel Overseas */}
+      <IntroOverview />
       
       {/* 3D tilt cards bento overview */}
       <ServicesPreview />

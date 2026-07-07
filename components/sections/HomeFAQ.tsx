@@ -8,24 +8,20 @@ import { RealPlane } from "@/components/ui/GlobalBackground";
 
 const faqs = [
   {
-    question: "What services does Zeel Overseas provide?",
-    answer: "We provide end-to-end visa and immigration consultancy including study visas, work permits, permanent residency guidance, tourist/business visas, and complete visa documentation support for multiple countries."
+    question: "Which countries does Zeel Overseas provide visa services for?",
+    answer: "We support applications for Canada, Australia, the UK, Germany, the USA, New Zealand, and other destinations depending on your goals — ask us during your free consultation."
   },
   {
-    question: "How do I know which visa is right for me?",
-    answer: "Book a free consultation with our counsellors. We assess your profile, goals, and eligibility to recommend the most suitable visa pathway."
+    question: "Is the first consultation free?",
+    answer: "Yes, completely free with no obligation."
   },
   {
-    question: "Which countries does Zeel Overseas assist with?",
-    answer: "We specialize in top-tier migration destinations including Canada, Australia, the United Kingdom, the United States, Germany, and New Zealand."
+    question: "How is Zeel Overseas different from other consultants in Ahmedabad?",
+    answer: "We focus on honest eligibility assessment and complete, embassy-ready documentation rather than volume-based processing — every applicant gets individual attention."
   },
   {
-    question: "How long does the visa process take?",
-    answer: "Timelines vary by country and visa type. During your consultation, we provide a realistic timeline specific to your case."
-  },
-  {
-    question: "Do you help with visa documentation only, or the full process?",
-    answer: "We support the complete journey — from eligibility assessment to documentation, application filing, and post-visa guidance."
+    question: "Do you help with visa applications that were previously rejected?",
+    answer: "Yes — we review the rejection reasons and rebuild the case to address the specific gaps."
   }
 ];
 

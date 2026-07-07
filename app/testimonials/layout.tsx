@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Client Success Stories | Zeel Overseas Visa Consultancy",
-  description: "Real stories from Zeel Overseas clients who successfully secured study, work, and PR visas with our guidance.",
+  title: "Client Success Stories | Zeel Overseas Immigration Consultants",
+  description: "Read real success stories from students and professionals who achieved their visa approval with Zeel Overseas' immigration and visa consultancy services.",
 };
 
 export default function TestimonialsLayout({

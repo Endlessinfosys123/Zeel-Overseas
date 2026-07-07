@@ -1,4 +1,3 @@
-
 export interface FAQ {
   question: string;
   answer: string;
@@ -51,192 +50,248 @@ export interface ProcessStep {
 
 export const servicesData: Service[] = [
   {
-    title: "Study Visa",
+    title: "Study Visa Consultation",
     slug: "study-visa",
     iconName: "GraduationCap",
-    shortDesc: "Access world-class education. Secure your admissions and study permits in top global destinations.",
-    longDesc: "Open doors to global academic excellence. Our Study Visa service provides end-to-end guidance, from selecting the right university and course to securing your student permit and preparing for departure. We specialize in top-tier destinations including Canada, Australia, the United Kingdom, USA, Germany, and New Zealand.",
-    successRate: "99.2%",
+    shortDesc: "University shortlisting, application support, and student visa documentation for top study destinations.",
+    longDesc: "Choosing the right country, course, and university is the first step toward a successful study-abroad journey — and getting your student visa approved is the next. Zeel Overseas guides you through both, with counselors who understand what embassies and universities actually look for in a strong application.",
+    successRate: "99%",
     eligibility: [
-      "Letter of Acceptance (LOA) from a Designated Learning Institution (DLI).",
-      "Valid passport with at least 6 months validity from planned entry.",
-      "Proof of sufficient funds to cover tuition fees, living expenses, and return transportation.",
-      "Proof of language proficiency (IELTS, TOEFL, PTE, or Duolingo) meeting institution standards.",
-      "Clean medical record and police clearance certificate (if applicable)."
+      "Valid academic transcripts and certificates",
+      "English proficiency score (IELTS/PTE/TOEFL as required)",
+      "Proof of financial capability",
+      "Statement of Purpose",
+      "Valid passport"
     ],
     documents: [
-      "Official Letter of Acceptance from DLI.",
-      "Academic Transcripts, Degrees, and Diplomas.",
-      "Language Proficiency Test scorecard.",
-      "Proof of funds: GIC (Canada), Bank Statements, Loan approval letters, or sponsor affidavits.",
-      "Statement of Purpose (SOP) detailing academic and career plans.",
-      "Passport-sized photographs conforming to country visa specifications."
+      "Valid passport copies",
+      "Academic transcripts and certificates",
+      "IELTS/PTE/TOEFL scorecard",
+      "Statement of Purpose (SOP)",
+      "Letters of Recommendation (LORs)",
+      "Financial statements and proof of funds",
+      "University offer letter"
     ],
     faqs: [
       {
-        question: "Can I work while studying on a student visa?",
-        answer: "Yes, in most major study destinations like Canada, Australia, and the UK, students are permitted to work part-time (typically up to 20 hours per week) during academic terms and full-time during scheduled breaks."
+        question: "How long does a study visa application take?",
+        answer: "Processing times vary by country and season — typically [X–X weeks]. We'll give you a realistic, country-specific timeline during your consultation."
       },
       {
-        question: "What is a GIC and is it mandatory for Canada?",
-        answer: "A Guaranteed Investment Certificate (GIC) is a secure investment showing proof of funds for living expenses in Canada. For the Student Direct Stream (SDS) pathway, it is highly recommended/mandatory to purchase a $10,000 to $20,635 CAD GIC from a participating bank."
+        question: "Do I need IELTS for every country?",
+        answer: "Most English-speaking destinations require an English proficiency test, though requirements vary by university and visa category."
       },
       {
-        question: "How long does it take to process a study visa?",
-        answer: "Processing times vary significantly by country and application stream. Canadian SDS visas typically take 4-6 weeks, while UK Student visas take 3-4 weeks. We recommend starting your application 3-4 months prior to course commencement."
+        question: "Can Zeel Overseas help if my visa was previously refused?",
+        answer: "Yes — we review the refusal reasons and rebuild your application to address the specific gaps before reapplying."
+      },
+      {
+        question: "What documents do I need to get started?",
+        answer: "A valid passport and academic transcripts are enough to begin your free consultation."
       }
     ]
   },
   {
-    title: "Work Visa",
+    title: "Work Visa & Skilled Migration",
     slug: "work-visa",
     iconName: "Briefcase",
-    shortDesc: "Advance your career globally. Secure employer-sponsored permits and independent work rights.",
-    longDesc: "Secure your professional future in high-growth economies. We guide you through employer-sponsored work permits, working holiday visas, and post-study work authorization streams. Align your skills with global market demands and navigate complex labor market assessments with ease.",
-    successRate: "97.5%",
+    shortDesc: "Job-seeker visas, work permits, and employer-sponsored pathways for skilled professionals.",
+    longDesc: "Working abroad opens doors most professionals only dream of — but employer-sponsorship rules, skills assessments, and job-seeker visa criteria differ sharply from country to country. Zeel Overseas helps skilled workers understand which pathway actually fits their profile, then handles the paperwork end to end.",
+    successRate: "99%",
     eligibility: [
-      "A valid job offer from a licensed employer in the destination country.",
-      "Labor Market Impact Assessment (LMIA) or equivalent labor clearance (if required).",
-      "Relevant educational credentials and verifiable work experience mapping to the job profile.",
-      "Language proficiency matching job classification requirements.",
-      "A clean background with no security or medical inadmissibility."
+      "Relevant work experience and qualifications in an in-demand occupation",
+      "Skills assessment or credential recognition (where required)",
+      "English/local language proficiency as applicable",
+      "Valid passport and clean background check",
+      "Proof of funds (for job-seeker visa categories)"
     ],
     documents: [
-      "Signed Employment Contract / Offer Letter.",
-      "Approved LMIA or country-specific labor market authorization.",
-      "Detailed resume with reference letters from previous employers.",
-      "Educational Credential Assessment (ECA) report (if applicable).",
-      "Valid passport and civil status documents (marriage certificate, etc.).",
-      "Proof of financial sufficiency for initial settlement."
+      "Valid passport",
+      "Updated resume/CV",
+      "Experience and reference letters",
+      "Educational certificates",
+      "Skills assessment report",
+      "Offer letter (if employer-sponsored)",
+      "Proof of funds"
     ],
     faqs: [
       {
-        question: "What is an LMIA?",
-        answer: "A Labor Market Impact Assessment (LMIA) is a document that an employer in Canada may need to get before hiring a foreign worker. It proves that there is a need for a foreign worker to fill the job and that no Canadian worker is available to do it."
+        question: "What's the difference between a job-seeker visa and an employer-sponsored work visa?",
+        answer: "A job-seeker visa lets you enter a country to search for work within a set period; an employer-sponsored visa is tied to a confirmed job offer. We'll assess which fits your current situation."
       },
       {
-        question: "Can I bring my family on a work visa?",
-        answer: "In many cases, yes. Spouses of skilled workers are often eligible for open work permits or dependent visas, and children can obtain study permits or visitor records to accompany the principal applicant."
+        question: "Do I need a skills assessment for every country?",
+        answer: "Several countries require formal recognition of your qualifications before you can apply — we'll confirm this during your consultation."
+      },
+      {
+        question: "Can Zeel Overseas help me find a job abroad?",
+        answer: "We focus on visa and documentation guidance; for job-seeker visa categories, we help ensure your profile and paperwork meet the country's requirements so you can pursue opportunities once there."
+      },
+      {
+        question: "How long does work visa processing take?",
+        answer: "Timelines vary widely by country and visa category — we'll give you a realistic estimate specific to your case."
       }
     ]
   },
   {
-    title: "Permanent Residency",
+    title: "Permanent Residency (PR)",
     slug: "permanent-residency",
     iconName: "ShieldCheck",
-    shortDesc: "Establish a permanent global home. Navigate Express Entry, PNP, and skilled independent pathways.",
-    longDesc: "Make your global move permanent. Our PR visa services guide you through points-based immigration selection mechanisms such as Canada's Express Entry, Provincial Nominee Programs (PNP), Australia's Skilled Independent subclass 189/190, and regional talent streams. Achieve peace of mind with legal residency status.",
-    successRate: "96.8%",
+    shortDesc: "End-to-end PR application support for Canada, Australia, and other points-based immigration systems.",
+    longDesc: "Permanent residency is a long-term commitment — and points-based systems like Canada's Express Entry or Australia's skilled migration streams reward applicants who present a precise, well-documented profile. Zeel Overseas helps you understand your real points/eligibility standing before you invest time and money into an application.",
+    successRate: "99%",
     eligibility: [
-      "Points-based score threshold (age, education, experience, language skills).",
-      "Educational Credentials Assessment (ECA) proving parity with local standards.",
-      "Language test results (IELTS General or CELPIP) scoring high (CLB 9+ recommended for Canada).",
-      "Proof of funds to support yourself and dependents upon arrival.",
-      "Character check (Police clearance) and Medical examinations."
+      "Relevant work experience in a skilled occupation",
+      "Recognized educational qualifications (ECA may be required)",
+      "Minimum language proficiency score",
+      "Age and adaptability factors (program-dependent)",
+      "Valid passport and clean background/medical checks"
     ],
     documents: [
-      "Language proficiency test results.",
-      "ECA evaluation report from agencies like WES.",
-      "Verifiable employment letters, payslips, and tax records.",
-      "Proof of settlement funds (bank certificates, deposits).",
-      "Clear police records from all countries resided in for 6+ months.",
-      "Biometrics and passport copy."
+      "Valid passport",
+      "ECA (Educational Credential Assessment) report",
+      "Language test scorecard (IELTS/PTE/CELPIP)",
+      "Experience and reference letters",
+      "Educational certificates",
+      "Police clearance certificate",
+      "Medical exam records"
     ],
     faqs: [
       {
-        question: "How does the points-based system work?",
-        answer: "Countries like Canada and Australia rank candidates using grids (e.g., Comprehensive Ranking System - CRS). Points are awarded for age (younger applicants get more), education level, skilled work experience, and bilingualism. Candidates above the cut-off receive an Invitation to Apply (ITA)."
+        question: "How many points do I need for Canada PR?",
+        answer: "The required score changes with each draw. We'll calculate your current Comprehensive Ranking System (CRS) score and advise on ways to improve it."
       },
       {
-        question: "What is the difference between Express Entry and PNP?",
-        answer: "Express Entry is a federal system managing permanent residency applications. Provincial Nominee Programs (PNP) are run by individual provinces to select candidates who meet specific local economic needs, which grants an extra 600 CRS points in Express Entry."
+        question: "Do I need a job offer for PR?",
+        answer: "Not always — many points-based programs don't require a job offer, though having one can add points in some categories."
+      },
+      {
+        question: "What's an ECA and do I need one?",
+        answer: "An Educational Credential Assessment verifies your qualifications match the destination country's standards — required for most points-based programs."
+      },
+      {
+        question: "How long does the PR process take?",
+        answer: "Timelines depend on the specific program and current processing backlogs — we'll share realistic, up-to-date estimates during your consultation."
       }
     ]
   },
   {
-    title: "Tourist Visa",
+    title: "Tourist & Visit Visa",
     slug: "tourist-visa",
     iconName: "Globe",
-    shortDesc: "Explore the world seamlessly. Swift document review and file preparation for hassle-free travel.",
-    longDesc: "Travel the world without stress. Whether you are visiting family, taking a vacation, or attending business conferences, we handle the application file creation, hotel bookings, flight itineraries, and financial profile preparation to ensure maximum approval odds for tourist and visitor visas.",
-    successRate: "98.4%",
+    shortDesc: "Fast, accurate documentation for family visits, holidays, and short-term travel visas.",
+    longDesc: "Whether you're visiting family, planning a vacation, or traveling short-term for personal reasons, a clean, complete visa application makes all the difference. Zeel Overseas handles the documentation and filing so your travel plans stay on track.",
+    successRate: "99%",
     eligibility: [
-      "Clear purpose of visit (leisure, family visit, business conference).",
-      "Intent to return to home country (stable job, property, family ties).",
-      "Adequate funds to support the stay without local employment.",
-      "Clean travel history (beneficial but not mandatory).",
-      "No security risks or active immigration violations."
+      "Valid passport with sufficient validity",
+      "Proof of sufficient funds for the trip",
+      "Return travel intent documentation (employment/property/family ties)",
+      "Invitation letter (for family visits, where applicable)",
+      "Clean travel history (no prior overstays/violations)"
     ],
     documents: [
-      "Valid passport with previous visas (if any).",
-      "Detailed travel itinerary and hotel/accommodation bookings.",
-      "Return flight reservation details.",
-      "Bank statements showing stable balance for the past 6 months.",
-      "Income Tax Returns (ITR) for the last 2-3 years.",
-      "Leave approval letter from current employer or business registration documents."
+      "Valid passport",
+      "Recent photographs conforming to specifications",
+      "Bank statements for proof of funds",
+      "Invitation letter (if applicable)",
+      "Detailed travel itinerary",
+      "Employment or business proof",
+      "Travel insurance policy"
     ],
     faqs: [
       {
-        question: "How do I prove my intent to return home?",
-        answer: "By submitting strong ties to your home country. This includes an employment contract, property ownership deeds, active business registrations, and family ties (spouse/children staying behind)."
+        question: "How quickly can a tourist visa be processed?",
+        answer: "Processing times vary by country and season — we'll give you a realistic estimate and help you plan around it."
       },
       {
-        question: "Do I need travel insurance for a Schengen Visa?",
-        answer: "Yes, travel insurance is mandatory for Schengen visitor visas, with a minimum coverage of €30,000 for medical emergencies and repatriation, valid across all Schengen member states."
+        question: "Do I need an invitation letter to visit family abroad?",
+        answer: "Many countries require or strongly recommend one for family visit visas — we'll guide you on the exact requirement for your destination."
+      },
+      {
+        question: "What if my visa gets rejected?",
+        answer: "We review the rejection reason and help you reapply with a stronger, corrected application."
+      },
+      {
+        question: "Can Zeel Overseas help with visas for elderly parents or children?",
+        answer: "Yes — we handle documentation for applicants of all ages, including dependent family members traveling together."
       }
     ]
   },
   {
-    title: "Business Visa",
+    title: "Business Visa Support",
     slug: "business-visa",
     iconName: "Landmark",
-    shortDesc: "Expand your enterprise. Access foreign markets, set up branches, or invest in global businesses.",
-    longDesc: "Establish a global footprints. Our Business Visa program assists entrepreneurs, corporate executives, and high-net-worth investors in securing entry for market exploratory trips, starting subsidiaries, investing in local businesses, or obtaining golden visas and residency-by-investment permits.",
-    successRate: "95.5%",
+    shortDesc: "Visa assistance for entrepreneurs and business travelers pursuing overseas opportunities.",
+    longDesc: "Business travel comes with its own documentation rules — invitation letters, company registration proofs, and purpose-of-visit justifications that differ from tourist applications. Zeel Overseas helps entrepreneurs and business professionals put together a clean, credible application for meetings, conferences, and exploratory business trips abroad.",
+    successRate: "99%",
     eligibility: [
-      "Substantial capital for investment or proven business net worth.",
-      "Detailed business proposal aligned with destination economy requirements.",
-      "Prior entrepreneurial or executive-level management experience.",
-      "Proof of source of funds used for investment.",
-      "Fulfillment of minimum job creation requirements (for investor streams)."
+      "Valid passport with sufficient validity",
+      "Proof of business ownership/employment (company registration, ID card, or employment letter)",
+      "Business invitation letter from the host company/organization (where required)",
+      "Proof of financial standing (personal or company)",
+      "Clear travel purpose documentation"
     ],
     documents: [
-      "Comprehensive Business Plan.",
-      "Audited financial statements of existing businesses.",
-      "Source of funds verification reports.",
-      "Incorporation documents or partnership agreements.",
-      "Invitation letter from local chamber of commerce or trade partners.",
-      "Asset valuation reports."
+      "Valid passport",
+      "Business invitation letter",
+      "Company registration documents",
+      "Personal & company bank statements",
+      "Employment or business ownership proof",
+      "Detailed travel itinerary"
     ],
     faqs: [
       {
-        question: "What is a Residency-by-Investment (Golden Visa)?",
-        answer: "It is a program that grants residency or citizenship to foreign individuals who invest a significant amount of money in the host country's real estate, government bonds, or businesses, allowing seamless travel and business expansion."
+        question: "What's the difference between a business visa and a work visa?",
+        answer: "A business visa covers short-term activities like meetings, conferences, or exploring opportunities — it doesn't authorize taking up employment abroad, unlike a work visa."
+      },
+      {
+        question: "Do I need a formal invitation letter?",
+        answer: "Most business visa categories require one from the host company — we'll guide you on the exact format required."
+      },
+      {
+        question: "Can a first-time business traveler apply?",
+        answer: "Yes — we help first-time applicants build a credible file even without a long travel history."
+      },
+      {
+        question: "How long is a business visa typically valid for?",
+        answer: "Validity and permitted stay duration vary by country — we'll confirm the specifics for your target destination during consultation."
       }
     ]
   },
   {
-    title: "Visa Documentation",
-    slug: "visa-documentation",
+    title: "Visa Documentation & Embassy Audit",
+    slug: "documentation-audit",
     iconName: "FileText",
-    shortDesc: "Ensure zero errors. Professional review of SOPs, financial filings, and document portfolios.",
-    longDesc: "Avoid costly rejections. Our specialized Visa Documentation services offer expert proofing of Statement of Purposes (SOPs), sponsor affidavits, financial net worth certificates, and cover letters. We ensure your application package aligns exactly with the strict legal guidelines of embassy officers.",
-    successRate: "99.8%",
+    shortDesc: "Complete document preparation, verification, and embassy-ready file audits for any visa category.",
+    longDesc: "Most visa rejections come down to documentation gaps — a missing financial proof, an inconsistent SOP, an incomplete form. Whether you're applying independently or through another consultant, Zeel Overseas offers a standalone documentation and embassy-audit service to catch issues before they cost you your application.",
+    successRate: "99%",
     eligibility: [
-      "Applying for any visa type independently or through other agencies.",
-      "Requires professional formatting, translation, or legal verification of application documents.",
-      "Need correction of previous visa refusal files."
+      "Open to any applicant — whether self-filing or working with another consultant",
+      "Applicable to study, work, PR, tourist, or business visa categories"
     ],
     documents: [
-      "Draft files of current visa application.",
-      "Previous visa refusal letters (if applicable) for gap analysis.",
-      "Financial documents for auditing.",
-      "Personal statements or academic study plans requiring structural rewriting."
+      "Valid passport",
+      "Completed visa application form",
+      "Statement of Purpose (SOP) and Letters of Recommendation (LORs)",
+      "Financial proof and sponsorship documents",
+      "Supporting certificates specific to the visa type"
     ],
     faqs: [
       {
-        question: "Why are visa applications rejected most often?",
-        answer: "The primary reasons are weak SOPs, inconsistent financial explanations, inadequate proof of ties to home country, or misaligned educational/professional records. Professional documentation mitigates these issues."
+        question: "Can I use this service if I'm already working with another consultant?",
+        answer: "Yes — this is a standalone review service; we can audit documentation prepared elsewhere."
+      },
+      {
+        question: "What's the most common reason visas get rejected?",
+        answer: "Inconsistent or incomplete financial documentation and weak SOPs are among the most frequent issues we catch during audits."
+      },
+      {
+        question: "How long does a documentation audit take?",
+        answer: "Typically a few business days, depending on visa category and document volume — we'll confirm a timeline once we review your file."
+      },
+      {
+        question: "Do you also file the application after the audit?",
+        answer: "Yes, filing support is available as an add-on once your documentation is embassy-ready."
       }
     ]
   }
@@ -291,103 +346,103 @@ export const countriesData: Country[] = [
     code: "CA",
     flag: "🇨🇦",
     skylineImage: "https://images.unsplash.com/photo-1503970993-90f0587ab35e?auto=format&fit=crop&q=80&w=600&h=400",
-    tagline: "The land of maple leaves and endless PR opportunities.",
-    description: "Canada remains the top choice for global citizens, offering streamlined Express Entry PR systems, top universities, and post-graduation work rights."
+    tagline: "Study permits, Express Entry profiles, and work permits.",
+    description: "Canada remains a top choice for students and skilled workers thanks to its points-based PR pathways and post-study work opportunities. We help with study permits, Express Entry profiles, and work permit applications."
   },
   {
     name: "Australia",
     code: "AU",
     flag: "🇦🇺",
     skylineImage: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=600&h=400",
-    tagline: "High quality of life, sunny horizons, and skilled pathways.",
-    description: "With high wages, abundant sunshine, and robust points-based Subclass visa streams, Australia is perfect for skilled professionals and students."
+    tagline: "Student visas, skilled migration, and points-based PR pathways.",
+    description: "From globally ranked universities to skilled migration visas, Australia offers strong long-term settlement options. We guide student visa, skilled migration, and PR applications tailored to Australia's points test."
   },
   {
     name: "United Kingdom",
     code: "GB",
     flag: "🇬🇧",
     skylineImage: "https://images.unsplash.com/photo-1513635269975-59663e0ca1ad?auto=format&fit=crop&q=80&w=600&h=400",
-    tagline: "A historic hub for academic and professional growth.",
-    description: "Home to Russell Group universities and a highly competitive tech sector, the UK provides rich careers via Skilled Worker and Student routes."
-  },
-  {
-    name: "United States",
-    code: "US",
-    flag: "🇺🇸",
-    skylineImage: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&q=80&w=600&h=400",
-    tagline: "The ultimate hub of innovation and business expansion.",
-    description: "From STEM OPT extensions for graduates to corporate investment pathways (L-1/EB-5), the USA offers the ultimate platform for ambition."
+    tagline: "Graduate routes, student permits, and skilled worker sponsorship.",
+    description: "The UK's Graduate Route and skilled worker visa make it attractive for students and professionals alike. We handle student visa documentation, Certificate of Sponsorship requirements, and dependent visa guidance."
   },
   {
     name: "Germany",
     code: "DE",
     flag: "🇩🇪",
     skylineImage: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&q=80&w=600&h=400",
-    tagline: "Europe's economic engine offering tuition-free study.",
-    description: "With low or zero university tuition fees and the Opportunity Card for job-seekers, Germany is a premier gateway to European residency."
+    tagline: "Opportunity Card, job-seeker visas, and Blue Card pathways.",
+    description: "Germany's Opportunity Card and strong demand for skilled engineers, IT professionals, and tradespeople make it a growing destination. We assist with job-seeker visas, Blue Card applications, and credential recognition."
+  },
+  {
+    name: "United States",
+    code: "US",
+    flag: "🇺🇸",
+    skylineImage: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&q=80&w=600&h=400",
+    tagline: "F-1 student visas and H-1B work visa documentation.",
+    description: "For students pursuing F-1 visas or professionals exploring H-1B/work-based pathways, we help build strong, well-documented applications suited to US visa scrutiny."
   },
   {
     name: "New Zealand",
     code: "NZ",
     flag: "🇳🇿",
     skylineImage: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=600&h=400",
-    tagline: "Unmatched safety, scenic beauty, and work pathways.",
-    description: "Known for work-life balance and high security, New Zealand offers great green-list residency options for professional profiles."
+    tagline: "Student permit and skilled migrant category applications.",
+    description: "A welcoming destination for students and skilled migrants, with clear pathways from study to residency. We support student visa and skilled migrant category applications."
   }
 ];
 
 export const milestonesData: Milestone[] = [
   {
-    year: "2015",
-    title: "Foundation of Zeel Overseas",
-    description: "Started with a small team in India to help students connect with international universities."
+    year: "[Year]",
+    title: "Zeel Overseas founded in Ahmedabad",
+    description: "Starting our journey to offer honest, direct immigration counseling and visa support to students and skilled workers across Gujarat."
   },
   {
-    year: "2018",
-    title: "Expansion to Skilled Migration",
-    description: "Launched PR and Work visa services for Canada and Australia, tripling our client base."
+    year: "[Year]",
+    title: "Reached [X] Successful Visa Approvals",
+    description: "A key milestone demonstrating our rigorous documentation quality control, resulting in an exceptionally high approval rate."
   },
   {
-    year: "2021",
-    title: "Going Digital & Tech-Enabled",
-    description: "Introduced advanced document audit workflows and secured a 98% overall success rate."
+    year: "[Year]",
+    title: "Expanded service portfolios to include PR & Work Visas",
+    description: "Adding Express Entry and Skilled Migration streams to support professionals and families seeking permanent resettlement options."
   },
   {
-    year: "2024",
-    title: "Global Footprint & Recognition",
-    description: "Recognized as a leading consultancy with 5,000+ happy clients and new global office affiliations."
+    year: "[Year]",
+    title: "Office Expansion & Partnerships",
+    description: "Expanding our headquarters to handle more complex cases, including document audits for previously rejected files."
   }
 ];
 
 export const processStepsData: ProcessStep[] = [
   {
     number: "01",
-    title: "Expert Consultation",
-    description: "We review your academic history, skills, and goals to choose the optimal visa route."
+    title: "Free Consultation",
+    description: "Discuss your goals and timeline during a completely free initial consultation with zero obligations."
   },
   {
     number: "02",
-    title: "Document Compilation",
-    description: "Professional checklists for financial records, transcripts, reference letters, and SOP checks."
+    title: "Profile Assessment & Documentation",
+    description: "We review your academic/professional details to design a personalized pathway and provide a clear document checklist."
   },
   {
     number: "03",
-    title: "Application Lodgment",
-    description: "Submission of your application to the embassy portals with detailed, error-free formatting."
+    title: "Application Filing",
+    description: "We prepare, verify, and audit every single document to embassy standard before submitting the file."
   },
   {
     number: "04",
     title: "Interview Preparation",
-    description: "Mock interviews with former visa officers to build confidence and refine response profiles."
+    description: "Receive mock interview training and guidance customized to the specific scrutiny parameters of your destination country."
   },
   {
     number: "05",
     title: "Visa Approval",
-    description: "Receive your visa stamped passport. We celebrate your first milestone together!"
+    description: "Get your passport back stamped with your visa and prepare to embark on your global journey."
   },
   {
     number: "06",
-    title: "Pre-Departure Briefing",
-    description: "Guidance on local laws, banking, GIC payouts, housing, and booking your travel tickets."
+    title: "Pre-Departure Support",
+    description: "Briefings on currency exchange, international banking, accommodation, and essential tips for your transition abroad."
   }
 ];

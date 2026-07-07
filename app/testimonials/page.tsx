@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { testimonialsData } from "@/lib/data";
-import { Star, Play, X, Heart, Globe, BadgeCheck } from "lucide-react";
+import { Star, Play, X, Heart, Globe, BadgeCheck, HelpCircle, ChevronDown, ArrowRight } from "lucide-react";
 import SplitText from "@/components/ui/SplitText";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -80,12 +81,12 @@ export default function Testimonials() {
               Client Feedback
             </span>
             <h1 className="clamp-title font-display font-black text-brand-charcoal leading-none">
-              <SplitText text="Success Stories" type="words" />
+              <SplitText text="Real Stories," type="words" />
               <br />
-              <SplitText text="From Our Clients." type="words" />
+              <SplitText text="Real Approvals." type="words" />
             </h1>
-            <p className="clamp-subtitle text-brand-charcoal/70 max-w-2xl font-body testimonials-fade opacity-0 translate-y-4">
-              Every visa approval is a story. Here&apos;s what our clients say about their journey with Zeel Overseas.
+            <p className="clamp-subtitle text-brand-charcoal/70 max-w-2xl font-body testimonials-fade opacity-0 translate-y-4 leading-relaxed">
+              Every case at Zeel Overseas is different — different countries, different goals, different challenges. What stays the same is our commitment to getting it right. Here&apos;s what our clients have to say about working with us.
             </p>
           </div>
         </div>
@@ -100,7 +101,7 @@ export default function Testimonials() {
             </div>
             <div>
               <div className="text-2xl font-display font-black text-brand-charcoal flex items-baseline">
-                <span className="count-element" data-target="500">0</span>
+                <span className="count-element" data-target="300">0</span>
                 <span>+</span>
               </div>
               <span className="text-[10px] font-display font-bold text-brand-gray-dark uppercase tracking-wider block">
@@ -115,7 +116,7 @@ export default function Testimonials() {
             </div>
             <div>
               <div className="text-2xl font-display font-black text-brand-charcoal flex items-baseline">
-                <span className="count-element" data-target="98">0</span>
+                <span className="count-element" data-target="99">0</span>
                 <span>%</span>
               </div>
               <span className="text-[10px] font-display font-bold text-brand-gray-dark uppercase tracking-wider block">
@@ -304,6 +305,67 @@ export default function Testimonials() {
               ))}
             </AnimatePresence>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials Page FAQs & CTA */}
+      <section className="py-20 border-t border-brand-gray-medium/20 relative z-10">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="text-xs font-display font-black tracking-widest text-brand-blue uppercase block mb-3">
+              Verification & Trust
+            </span>
+            <h2 className="clamp-section-title font-display font-black text-brand-charcoal mb-4">
+              Frequently Asked <br /> Questions.
+            </h2>
+          </div>
+
+          <div className="space-y-4 mb-20">
+            <details className="group bg-white/70 backdrop-blur-md border border-brand-gray-medium/55 rounded-2xl overflow-hidden shadow-sm transition-all duration-300 hover:border-brand-blue/30 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="w-full flex items-center justify-between p-6 text-left font-display font-bold text-base md:text-lg text-brand-charcoal hover:text-brand-blue transition-colors cursor-pointer list-none">
+                <div className="flex items-center space-x-3.5 pr-4">
+                  <HelpCircle className="w-5 h-5 shrink-0 text-brand-gray-dark group-open:text-brand-blue" />
+                  <span>Are these testimonials verified?</span>
+                </div>
+                <ChevronDown className="w-5 h-5 text-brand-gray-dark group-open:rotate-180 transition-transform duration-200" />
+              </summary>
+              <div className="px-6 pb-6 pt-2 text-sm md:text-base font-body text-brand-charcoal/70 leading-relaxed pl-[42px] border-t border-brand-gray-medium/10">
+                Yes — every testimonial is from a real Zeel Overseas client, shared with their consent.
+              </div>
+            </details>
+
+            <details className="group bg-white/70 backdrop-blur-md border border-brand-gray-medium/55 rounded-2xl overflow-hidden shadow-sm transition-all duration-300 hover:border-brand-blue/30 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="w-full flex items-center justify-between p-6 text-left font-display font-bold text-base md:text-lg text-brand-charcoal hover:text-brand-blue transition-colors cursor-pointer list-none">
+                <div className="flex items-center space-x-3.5 pr-4">
+                  <HelpCircle className="w-5 h-5 shrink-0 text-brand-gray-dark group-open:text-brand-blue" />
+                  <span>Can I speak to a past client before deciding?</span>
+                </div>
+                <ChevronDown className="w-5 h-5 text-brand-gray-dark group-open:rotate-180 transition-transform duration-200" />
+              </summary>
+              <div className="px-6 pb-6 pt-2 text-sm md:text-base font-body text-brand-charcoal/70 leading-relaxed pl-[42px] border-t border-brand-gray-medium/10">
+                In some cases, we can facilitate this with client permission — ask us during your consultation.
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA SECTION */}
+      <section className="py-20 border-y border-brand-gray-medium/20 bg-white/40 backdrop-blur-sm z-10 relative mb-12">
+        <div className="max-w-4xl mx-auto px-6 text-center space-y-6">
+          <h2 className="text-3xl md:text-4xl font-display font-black text-brand-charcoal">
+            Ready to Write Your Own Success Story?
+          </h2>
+          <p className="text-sm md:text-base font-body text-brand-charcoal/70 max-w-xl mx-auto leading-relaxed">
+            Book a free consultation with our immigration experts and get a clear, honest roadmap for your visa application — no obligation, no confusion.
+          </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center space-x-2 bg-brand-blue text-white font-display font-bold px-8 py-4 rounded-full shadow-lg hover:bg-brand-blue-light transition-all duration-300 hover:scale-105"
+          >
+            <span>Book Free Consultation</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 

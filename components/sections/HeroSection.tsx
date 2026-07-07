@@ -131,7 +131,7 @@ export const HeroSection: React.FC = () => {
 
           {/* Subtitle */}
           <p className="clamp-subtitle text-neutral-600 max-w-lg font-body hero-fade opacity-0 translate-y-4 leading-relaxed">
-            Navigate study visas, permanent residency, work permits, and embassy audits with India&apos;s premier immigration consultancy. Evoking absolute trust since 2018.
+            Navigate study visas, permanent residency, work permits, and embassy documentation with Ahmedabad&apos;s dedicated immigration consultancy. Honest advice. Complete paperwork support. Real outcomes.
           </p>
 
           {/* Service Tags */}
