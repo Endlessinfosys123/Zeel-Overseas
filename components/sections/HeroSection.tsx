@@ -37,7 +37,7 @@ export const HeroSection: React.FC = () => {
       <div className="absolute inset-0 overflow-hidden z-0 select-none pointer-events-none">
         <video
           ref={videoRef}
-          src="/zeel-hero.mp4"
+          src="/zeel-hero-2.mp4"
           className="absolute inset-0 w-full h-full object-cover opacity-90 z-0"
           loop
           muted
