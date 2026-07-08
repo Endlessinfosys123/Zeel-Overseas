@@ -36,6 +36,8 @@ export const Navbar: React.FC = () => {
     { name: "Contact Us", href: "/contact" },
   ];
 
+  const isWhiteNav = !isScrolled && pathname === "/";
+
   return (
     <>
       <header
@@ -52,10 +54,14 @@ export const Navbar: React.FC = () => {
               <Globe className="w-5 h-5 text-white" />
             </div>
             <div>
-              <span className="font-display font-black text-xl tracking-tight text-brand-charcoal block">
+              <span className={`font-display font-black text-xl tracking-tight block transition-colors duration-300 ${
+                isWhiteNav ? "text-white" : "text-brand-charcoal"
+              }`}>
                 ZEEL OVERSEAS
               </span>
-              <span className="text-[9px] uppercase tracking-widest text-brand-gold font-bold font-display block -mt-1">
+              <span className={`text-[9px] uppercase tracking-widest font-bold font-display block -mt-1 transition-colors duration-300 ${
+                isWhiteNav ? "text-brand-gold-light" : "text-brand-gold"
+              }`}>
                 Immigration & Visa
               </span>
             </div>
@@ -69,8 +75,14 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`link-draw font-display text-sm font-semibold tracking-wide transition-colors ${
-                    isActive ? "text-brand-blue" : "text-brand-charcoal hover:text-brand-blue"
+                  className={`link-draw font-display text-sm font-semibold tracking-wide transition-colors duration-300 ${
+                    isActive
+                      ? isWhiteNav
+                        ? "text-brand-gold-light font-black"
+                        : "text-brand-blue"
+                      : isWhiteNav
+                      ? "text-white/80 hover:text-white"
+                      : "text-brand-charcoal hover:text-brand-blue"
                   }`}
                 >
                   {link.name}
@@ -100,7 +112,13 @@ export const Navbar: React.FC = () => {
           {/* Hamburger Menu Toggle (Mobile) */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-brand-charcoal hover:text-brand-blue z-[9995] cursor-pointer"
+            className={`md:hidden p-2 z-[9995] cursor-pointer transition-colors duration-300 ${
+              isMobileMenuOpen
+                ? "text-brand-charcoal"
+                : isWhiteNav
+                ? "text-white hover:text-brand-gold-light"
+                : "text-brand-charcoal hover:text-brand-blue"
+            }`}
             aria-label="Toggle Menu"
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

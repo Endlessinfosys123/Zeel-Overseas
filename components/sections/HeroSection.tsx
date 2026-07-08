@@ -9,20 +9,28 @@ import SplitText from "@/components/ui/SplitText";
 import HeroVisualPanel from "@/components/sections/HeroVisualPanel";
 import { RealPlane, FlightArcPath, CompassIcon } from "@/components/ui/GlobalBackground";
 
-// Quick stat chips
+// Quick stat chips with glassmorphic style
 const floatStats = [
-  { label: "Visas Approved", value: "2500+", color: "bg-blue-50 border-blue-200", textColor: "text-blue-700", icon: <FileCheck className="w-4 h-4" /> },
-  { label: "Countries", value: "25+", color: "bg-amber-50 border-amber-200", textColor: "text-amber-700", icon: <Globe2 className="w-4 h-4" /> },
-  { label: "Success Rate", value: "98%", color: "bg-green-50 border-green-200", textColor: "text-green-700", icon: <Star className="w-4 h-4" /> },
+  { label: "Visas Approved", value: "2500+", color: "bg-white/5 border-white/10 backdrop-blur-md", textColor: "text-white", icon: <FileCheck className="w-4 h-4 text-brand-gold-light" /> },
+  { label: "Countries", value: "25+", color: "bg-white/5 border-white/10 backdrop-blur-md", textColor: "text-white", icon: <Globe2 className="w-4 h-4 text-cyan-400" /> },
+  { label: "Success Rate", value: "98%", color: "bg-white/5 border-white/10 backdrop-blur-md", textColor: "text-white", icon: <Star className="w-4 h-4 text-amber-400" /> },
 ];
 
 export const HeroSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     let ctx: ReturnType<typeof gsap.context> | undefined;
 
     const startAnimations = () => {
+      // Start video playback immediately on preloader finish
+      if (videoRef.current) {
+        videoRef.current.play().catch((err) => {
+          console.warn("Autoplay blocked by browser policy.", err);
+        });
+      }
+
       ctx = gsap.context(() => {
         const tl = gsap.timeline(); // No delay needed now as it's triggered exactly on exit
 
@@ -73,23 +81,36 @@ export const HeroSection: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden z-10 bg-transparent"
+      className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden z-10 bg-black"
     >
-      {/* ── UNIQUE HERO BACKGROUND ELEMENTS ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
-        {/* Soft Radial Gradients */}
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-blue-100/50 blur-3xl" />
-        <div className="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full bg-amber-100/40 blur-3xl" />
-        <div className="absolute -bottom-20 left-1/3 w-[600px] h-[280px] rounded-full bg-sky-100/40 blur-3xl" />
+      {/* ── CINEMATIC FULL-BLEED VIDEO BACKGROUND ── */}
+      <div className="absolute inset-0 overflow-hidden z-0 select-none">
+        {/* Background Video element */}
+        <video
+          ref={videoRef}
+          src="/zeel-hero.mp4"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90 z-0"
+          loop
+          muted
+          playsInline
+        />
+        {/* Dark overlay mask for perfect text legibility */}
+        <div className="absolute inset-0 bg-neutral-950/50 backdrop-blur-[1px] z-10" />
+
+        {/* ── TECHNICAL TELEMETRY HUD OVERLAY ── */}
+        {/* Soft radial glow points */}
+        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-3xl z-20" />
+        <div className="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full bg-brand-gold/10 blur-3xl z-20" />
+        <div className="absolute -bottom-20 left-1/3 w-[600px] h-[280px] rounded-full bg-sky-500/10 blur-3xl z-20" />
 
         {/* Flight Arc Dotted Line */}
-        <div className="absolute top-[18%] left-[2%] opacity-60">
-          <FlightArcPath w={320} h={130} color="#2563EB" />
+        <div className="absolute top-[18%] left-[2%] opacity-30 z-20">
+          <FlightArcPath w={320} h={130} color="#FFFFFF" />
         </div>
 
         {/* Real passenger jet airliner flying along flight route */}
         <motion.div
-          className="absolute"
+          className="absolute z-20"
           style={{ top: "18%", left: "-5%" }}
           animate={{
             left: ["-5%", "105%"],
@@ -102,48 +123,48 @@ export const HeroSection: React.FC = () => {
             ease: "easeInOut",
           }}
         >
-          <RealPlane size={36} color="#2563EB" />
+          <RealPlane size={36} color="#FFFFFF" />
         </motion.div>
 
         {/* Rotating Compass Outline */}
         <motion.div
-          className="absolute bottom-[10%] left-[4%] opacity-25"
+          className="absolute bottom-[10%] left-[4%] opacity-15 z-20"
           animate={{ rotate: 360 }}
           transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
         >
-          <CompassIcon size={100} color="#D4AF37" />
+          <CompassIcon size={100} color="#FFFFFF" />
         </motion.div>
-        <div className="absolute -bottom-10 -right-20 w-[350px] h-[350px] rounded-full bg-yellow-100/30 blur-3xl" />
+        <div className="absolute -bottom-10 -right-20 w-[350px] h-[350px] rounded-full bg-yellow-500/10 blur-3xl z-20" />
       </div>
 
-      {/* Main content */}
+      {/* Main content grid */}
       <div className="max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-center py-12 md:py-20 relative z-10">
 
-        {/* ── LEFT: Text & CTAs ── */}
+        {/* ── LEFT: Text & CTAs (White Glassmorphic Style) ── */}
         <div className="lg:col-span-6 flex flex-col justify-center space-y-6 text-left">
 
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-blue-600/10 border border-blue-300/40 backdrop-blur-sm px-4 py-2 rounded-full w-fit"
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm px-4 py-2 rounded-full w-fit"
           >
-            <Plane className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-            <span className="text-[11px] font-display font-black tracking-wider text-blue-700 uppercase">
+            <Plane className="w-3.5 h-3.5 text-brand-gold-light animate-pulse" />
+            <span className="text-[11px] font-display font-black tracking-wider text-white uppercase">
               Now Boarding — Ahmedabad to the World
             </span>
           </motion.div>
 
           {/* Headline */}
-          <h1 className="clamp-title font-display font-black leading-none" style={{ color: "#1A1A1A" }}>
+          <h1 className="clamp-title font-display font-black leading-none text-white">
             <SplitText text="Your Global" type="words" />
             <br />
             <span className="relative">
               <SplitText text="Future," type="words" />
               <span
                 className="relative ml-4 text-transparent bg-clip-text"
-                style={{ backgroundImage: "linear-gradient(135deg, #2563EB, #06b6d4)" }}
+                style={{ backgroundImage: "linear-gradient(135deg, #D4AF37, #FFB84D)" }}
               >
                 <SplitText text="Documented." type="words" />
               </span>
@@ -151,7 +172,7 @@ export const HeroSection: React.FC = () => {
           </h1>
 
           {/* Subtitle */}
-          <p className="clamp-subtitle text-neutral-600 max-w-lg font-body hero-fade opacity-0 translate-y-4 leading-relaxed">
+          <p className="clamp-subtitle text-white/80 max-w-lg font-body hero-fade opacity-0 translate-y-4 leading-relaxed">
             Navigate study visas, permanent residency, work permits, and embassy documentation with Ahmedabad&apos;s dedicated immigration consultancy. Honest advice. Complete paperwork support. Real outcomes.
           </p>
 
@@ -161,7 +182,7 @@ export const HeroSection: React.FC = () => {
               <span
                 key={tag}
                 className="text-[11px] font-display font-bold px-3 py-1.5 rounded-full border"
-                style={{ background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.2)", color: "#2563EB" }}
+                style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.2)", color: "#FFFFFF" }}
               >
                 {tag}
               </span>
@@ -180,7 +201,7 @@ export const HeroSection: React.FC = () => {
             </Link>
             <Link
               href="/services"
-              className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50 text-center font-display font-bold px-8 py-4 rounded-full transition-all duration-300 bg-white/70 backdrop-blur-sm"
+              className="border-2 border-white/20 text-white hover:bg-white/10 text-center font-display font-bold px-8 py-4 rounded-full transition-all duration-300 bg-white/5 backdrop-blur-sm"
             >
               Explore Services
             </Link>
@@ -196,29 +217,29 @@ export const HeroSection: React.FC = () => {
                 {stat.icon}
                 <div>
                   <div className="text-xs font-black font-display">{stat.value}</div>
-                  <div className="text-[9px] font-medium opacity-70 leading-none">{stat.label}</div>
+                  <div className="text-[9px] font-medium opacity-75 leading-none">{stat.label}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── RIGHT: Premium Passport / Visa Journey Animation ── */}
+        {/* ── RIGHT: Premium Floating Widgets Over Video ── */}
         <div className="lg:col-span-6 w-full relative hero-right opacity-0 translate-x-8">
           <HeroVisualPanel />
         </div>
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-1 select-none pointer-events-none hero-fade opacity-0 translate-y-4 hidden md:flex">
-        <span className="text-[9px] font-display font-bold tracking-widest text-neutral-400 uppercase">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-1 select-none pointer-events-none hero-fade opacity-0 translate-y-4 hidden md:flex z-20">
+        <span className="text-[9px] font-display font-bold tracking-widest text-white/50 uppercase">
           SCROLL TO EXPLORE
         </span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
         >
-          <ChevronDown className="w-4 h-4 text-neutral-400" />
+          <ChevronDown className="w-4 h-4 text-white/50" />
         </motion.div>
       </div>
     </section>
