@@ -1,5 +1,6 @@
 import React from "react";
 import HeroSection from "@/components/sections/HeroSection";
+import HeroIntroSection from "@/components/sections/HeroIntroSection";
 import TrustBar from "@/components/sections/TrustBar";
 import IntroOverview from "@/components/sections/IntroOverview";
 import ServicesPreview from "@/components/sections/ServicesPreview";
@@ -13,8 +14,11 @@ import FinalCTA from "@/components/sections/FinalCTA";
 export default function Home() {
   return (
     <>
-      {/* 3D Earth Globe + SplitText Title Hero */}
+      {/* Full-bleed video backdrop Hero */}
       <HeroSection />
+      
+      {/* Hero text copy and 3D floating animation panel */}
+      <HeroIntroSection />
       
       {/* Auto-scrolling countries marquee + Scroll count stats */}
       <TrustBar />
