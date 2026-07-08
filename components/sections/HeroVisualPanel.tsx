@@ -1,42 +1,34 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle2, Globe2, GraduationCap,
-  Briefcase, Shield, Plane, MapPin, FileText, Star
+  Play, Pause, Volume2, VolumeX, Shield, Globe2, GraduationCap,
+  Briefcase, CheckCircle2, Star, MapPin
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────
    DESTINATION COUNTRIES
+   Added coords for HUD display
 ───────────────────────────────────────────── */
 const destinations = [
-  { flag: "🇨🇦", name: "Canada",      color: "#ef4444", bg: "#fff1f1", visa: "Express Entry PR",   time: "6 months",  icon: <Shield className="w-4 h-4" /> },
-  { flag: "🇦🇺", name: "Australia",   color: "#f59e0b", bg: "#fffbeb", visa: "Student Visa 500",   time: "4 weeks",   icon: <GraduationCap className="w-4 h-4" /> },
-  { flag: "🇬🇧", name: "UK",          color: "#3b82f6", bg: "#eff6ff", visa: "Skilled Worker",     time: "8 weeks",   icon: <Briefcase className="w-4 h-4" /> },
-  { flag: "🇺🇸", name: "USA",         color: "#8b5cf6", bg: "#f5f3ff", visa: "F-1 Student",        time: "3 weeks",   icon: <GraduationCap className="w-4 h-4" /> },
-  { flag: "🇩🇪", name: "Germany",     color: "#10b981", bg: "#ecfdf5", visa: "EU Blue Card",       time: "10 weeks",  icon: <Briefcase className="w-4 h-4" /> },
-  { flag: "🇳🇿", name: "New Zealand", color: "#06b6d4", bg: "#ecfeff", visa: "Work Visa",          time: "6 weeks",   icon: <Globe2 className="w-4 h-4" /> },
+  { flag: "🇨🇦", name: "Canada",      color: "#ef4444", bg: "#fff1f1", visa: "Express Entry PR",   time: "6 months",  coords: "45.4215° N, 75.6972° W",  icon: <Shield className="w-3 h-3" /> },
+  { flag: "🇦🇺", name: "Australia",   color: "#f59e0b", bg: "#fffbeb", visa: "Student Visa 500",   time: "4 weeks",   coords: "35.2809° S, 149.1300° E", icon: <GraduationCap className="w-3 h-3" /> },
+  { flag: "🇬🇧", name: "UK",          color: "#3b82f6", bg: "#eff6ff", visa: "Skilled Worker",     time: "8 weeks",   coords: "51.5074° N, 0.1278° W",   icon: <Briefcase className="w-3 h-3" /> },
+  { flag: "🇺🇸", name: "USA",         color: "#8b5cf6", bg: "#f5f3ff", visa: "F-1 Student",        time: "3 weeks",   coords: "38.9072° N, 77.0369° W",  icon: <GraduationCap className="w-3 h-3" /> },
+  { flag: "🇩🇪", name: "Germany",     color: "#10b981", bg: "#ecfdf5", visa: "EU Blue Card",       time: "10 weeks",  coords: "52.5200° N, 13.4050° E",  icon: <Briefcase className="w-3 h-3" /> },
+  { flag: "🇳🇿", name: "New Zealand", color: "#06b6d4", bg: "#ecfeff", visa: "Work Visa",          time: "6 weeks",   coords: "41.2865° S, 174.7762° E", icon: <Globe2 className="w-3 h-3" /> },
 ];
 
-/* ─────────────────────────────────────────────
-   FLOATING DOCUMENT CARDS (behind passport)
-───────────────────────────────────────────── */
-const docCards = [
-  { label: "SOP",          angle: -25, radius: 180, delay: 0,   color: "#dbeafe", border: "#93c5fd" },
-  { label: "IELTS 7.5",   angle: 40,  radius: 170, delay: 0.4, color: "#fef3c7", border: "#fcd34d" },
-  { label: "Offer Letter", angle: 105, radius: 185, delay: 0.8, color: "#d1fae5", border: "#6ee7b7" },
-  { label: "Bank Proof",   angle: 170, radius: 175, delay: 1.2, color: "#ede9fe", border: "#c4b5fd" },
-  { label: "Passport",     angle: 235, radius: 180, delay: 1.6, color: "#fee2e2", border: "#fca5a5" },
-  { label: "Embassy Doc",  angle: 300, radius: 170, delay: 2.0, color: "#cffafe", border: "#67e8f9" },
-];
-
-/* ─────────────────────────────────────────────
-   MAIN COMPONENT
-───────────────────────────────────────────── */
 export default function HeroVisualPanel() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [stamped, setStamped] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Auto-cycle destinations
   useEffect(() => {
@@ -51,179 +43,288 @@ export default function HeroVisualPanel() {
     return () => clearInterval(interval);
   }, []);
 
+  // Listen for the preloaderFinished event to play the video
+  useEffect(() => {
+    const handleStartPlayback = () => {
+      setIsPlaying(true);
+      if (videoRef.current) {
+        videoRef.current.play().catch((err) => {
+          console.warn("Autoplay blocked by browser. User interaction needed to play audio.", err);
+          setIsPlaying(false);
+        });
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      if ((window as Window & typeof globalThis & { __preloaderFinished?: boolean }).__preloaderFinished) {
+        handleStartPlayback();
+      } else {
+        window.addEventListener("preloaderFinished", handleStartPlayback);
+        return () => window.removeEventListener("preloaderFinished", handleStartPlayback);
+      }
+    }
+  }, []);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    }
+  };
+
+  const toggleMute = () => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  // 3D Parallax Tilt Effect on Mouse Move
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!panelRef.current) return;
+    const rect = panelRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left - width / 2;
+    const mouseY = e.clientY - rect.top - height / 2;
+    const rX = -(mouseY / (height / 2)) * 6; // Limit tilt range
+    const rY = (mouseX / (width / 2)) * 6;
+    setTilt({ x: rX, y: rY });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
+
   const dest = destinations[activeIdx];
 
   return (
-    <div className="relative w-full h-[520px] flex items-center justify-center select-none">
-
-      {/* ── Ambient glow behind everything ── */}
+    <div className="relative w-full h-[520px] flex items-center justify-center select-none animate-float">
+      {/* ── Ambient glow behind the panel ── */}
       <div
-        className="absolute w-72 h-72 rounded-full pointer-events-none"
+        className="absolute w-72 h-72 rounded-full pointer-events-none transition-all duration-700 blur-[50px] opacity-40 z-0 animate-pulse-glow"
         style={{
-          background: `radial-gradient(circle, ${dest.color}30 0%, transparent 70%)`,
-          filter: "blur(40px)",
-          transition: "background 0.6s ease",
+          background: `radial-gradient(circle, ${dest.color} 0%, transparent 70%)`,
         }}
       />
 
-      {/* ── Orbiting Document Pills ── */}
-      {docCards.map((doc, i) => {
-        const rad = (doc.angle * Math.PI) / 180;
-        const x = Math.cos(rad) * doc.radius;
-        const y = Math.sin(rad) * doc.radius;
-        return (
-          <motion.div
-            key={doc.label}
-            className="absolute flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-display font-black border shadow-sm"
-            style={{
-              background: doc.color,
-              borderColor: doc.border,
-              color: "#374151",
-            }}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              x: [x, x + 4, x - 4, x],
-              y: [y, y - 6, y + 6, y],
-            }}
-            transition={{
-              opacity: { delay: doc.delay + 1, duration: 0.5 },
-              scale:   { delay: doc.delay + 1, duration: 0.5 },
-              x: { delay: doc.delay + 1, duration: 5 + i * 0.4, repeat: Infinity, ease: "easeInOut" },
-              y: { delay: doc.delay + 1, duration: 4 + i * 0.3, repeat: Infinity, ease: "easeInOut" },
-            }}
-          >
-            <FileText className="w-3 h-3" style={{ color: doc.border }} />
-            {doc.label}
-          </motion.div>
-        );
-      })}
-
-      {/* ── CENTRAL PASSPORT CARD ── */}
+      {/* ── MAIN CINEMATIC VIDEO PORTAL VIEWPORT ── */}
       <motion.div
-        className="relative z-10 w-64"
+        ref={panelRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative z-10 w-full max-w-[480px] aspect-[16/10] rounded-3xl bg-neutral-950 border border-neutral-800 p-1.5 shadow-2xl overflow-visible cursor-default"
+        style={{
+          transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+          transformStyle: "preserve-3d",
+          transition: "transform 0.15s ease-out",
+        }}
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.7, ease: "backOut" }}
       >
-        {/* Passport book */}
-        <div
-          className="rounded-3xl shadow-2xl overflow-hidden"
-          style={{
-            background: "linear-gradient(145deg, #1e3a8a, #1d4ed8)",
-            boxShadow: "0 30px 60px -10px rgba(37,99,235,0.4), 0 10px 20px -5px rgba(0,0,0,0.15)",
-          }}
-        >
-          {/* Passport header */}
-          <div className="px-5 pt-5 pb-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[9px] font-display font-black tracking-[0.2em] text-blue-200 uppercase">Republic of India</p>
-                <p className="text-lg font-display font-black text-white mt-0.5">PASSPORT</p>
-              </div>
-              <div className="w-10 h-10 rounded-full border-2 border-blue-400/50 flex items-center justify-center">
-                <Globe2 className="w-5 h-5 text-blue-300" />
-              </div>
-            </div>
-            <div className="mt-3 h-px bg-blue-600/60" />
+        {/* Animated Gradient Glow Border Overlay */}
+        <div className="absolute -inset-0.5 rounded-[26px] bg-gradient-to-tr from-brand-blue to-brand-gold opacity-30 blur-sm pointer-events-none z-0" />
+
+        {/* Video Viewport Container */}
+        <div className="relative w-full h-full rounded-2xl overflow-hidden bg-black z-10 flex items-center justify-center">
+          {/* Grain scanlines pattern for technical HUD feel */}
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100%_4px] mix-blend-overlay opacity-40 z-20" />
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/80 via-transparent to-black/40 z-20" />
+
+          {/* HTML5 Video Element */}
+          <video
+            ref={videoRef}
+            src="/zeel-hero.mp4"
+            className="w-full h-full object-cover z-10"
+            loop
+            muted={isMuted}
+            playsInline
+          />
+
+          {/* ── Viewfinder HUD Overlays ── */}
+          {/* Top-Left: Pulse & Status */}
+          <div className="absolute top-3.5 left-3.5 flex items-center gap-2 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 text-[9px] font-mono tracking-widest text-white/90 z-30">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
+            <span>PORTAL RADAR</span>
           </div>
 
-          {/* Visa stamp area */}
-          <div className="px-5 pb-3">
-            <p className="text-[9px] font-display font-black tracking-widest text-blue-300 uppercase mb-2">Visa Entry</p>
+          {/* Top-Right: Target Coords */}
+          <div className="absolute top-3.5 right-3.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 text-[9px] font-mono text-white/80 tracking-wide z-30">
+            {dest.coords}
+          </div>
 
-            {/* Destination flag + name — animates per cycle */}
+          {/* Bottom-Left: Live Connection Indicators */}
+          <div className="absolute bottom-16 left-3.5 bg-black/60 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 text-[10px] font-mono text-white/90 flex flex-col gap-0.5 z-30 text-left">
+            <span className="text-[7px] text-white/50 uppercase tracking-widest font-sans font-bold">STREAM SYSTEM</span>
+            <span className="font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              FEED ONLINE
+            </span>
+          </div>
+
+          {/* Bottom-Right: Target country telemetry */}
+          <div className="absolute bottom-16 right-3.5 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 text-white flex items-center gap-2.5 z-30 text-left">
+            <span className="text-2xl leading-none">{dest.flag}</span>
+            <div className="leading-none">
+              <div className="text-[10px] font-black font-display tracking-wider text-brand-gold-light">{dest.name.toUpperCase()}</div>
+              <div className="text-[8px] text-neutral-300 mt-0.5 font-medium">{dest.visa}</div>
+            </div>
+          </div>
+
+          {/* ── Custom Glassmorphic Controls ── */}
+          <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 flex items-center gap-3.5 bg-black/70 backdrop-blur-lg border border-white/15 px-4 py-2 rounded-full z-30 shadow-lg">
+            {/* Play/Pause Button */}
+            <button
+              onClick={togglePlay}
+              className="text-white/80 hover:text-white transition-colors cursor-pointer p-0.5 focus:outline-none"
+              aria-label={isPlaying ? "Pause video" : "Play video"}
+            >
+              {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white/10" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+            </button>
+
+            <div className="w-px h-3.5 bg-white/20" />
+
+            {/* Mute/Unmute Action */}
+            <button
+              onClick={toggleMute}
+              className="flex items-center gap-1.5 text-white/80 hover:text-white transition-all cursor-pointer text-[10px] font-mono uppercase font-black focus:outline-none"
+              aria-label={isMuted ? "Unmute video" : "Mute video"}
+            >
+              {isMuted ? (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 text-brand-gold-light" />
+                  <span className="text-brand-gold-light tracking-wider animate-pulse">UNMUTE</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-400 tracking-wider">MUTED</span>
+                </>
+              )}
+            </button>
+
+            {/* Micro Audio Equalizer Animation */}
+            <div className="flex items-end gap-0.5 h-2.5 w-6 pb-0.5" aria-hidden="true">
+              {[1, 2, 3, 4].map((bar) => (
+                <motion.div
+                  key={bar}
+                  className={`w-0.5 rounded-full ${isMuted ? "bg-white/20 h-0.5" : "bg-emerald-400"}`}
+                  animate={!isMuted && isPlaying ? {
+                    height: ["15%", "100%", "30%", "70%", "15%"]
+                  } : { height: "20%" }}
+                  transition={{
+                    duration: 0.6 + bar * 0.12,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── FLOATING PASSPORT CARD (overlays video bottom-right) ── */}
+        <motion.div
+          className="absolute -right-6 -bottom-10 z-30 w-56 rounded-2xl overflow-hidden border border-brand-blue/15 bg-white/95 backdrop-blur-md shadow-xl select-none"
+          initial={{ y: 20, opacity: 0, rotate: 5 }}
+          animate={{
+            y: [0, -6, 0],
+            opacity: 1,
+            rotate: 5,
+          }}
+          transition={{
+            y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" },
+            opacity: { delay: 1.2, duration: 0.5 },
+          }}
+          whileHover={{ scale: 1.06, rotate: 0, zIndex: 40 }}
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          {/* Header */}
+          <div className="bg-brand-blue px-4 py-3 flex items-center justify-between text-white">
+            <div>
+              <p className="text-[7px] font-mono tracking-widest text-blue-200 uppercase leading-none">REPUBLIC OF INDIA</p>
+              <p className="text-[10px] font-display font-black uppercase mt-0.5 leading-none">PASSPORT</p>
+            </div>
+            <Globe2 className="w-4 h-4 text-blue-300 animate-spin-slow" />
+          </div>
+
+          {/* Visa Info */}
+          <div className="p-4 relative min-h-[95px] text-left">
+            <span className="text-[7px] font-mono text-neutral-400 uppercase tracking-widest block font-bold">VISA STATUS DECK</span>
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={dest.name}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35 }}
-                className="flex items-center gap-3"
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 5 }}
+                transition={{ duration: 0.25 }}
+                className="mt-2 flex items-center gap-2.5"
               >
-                <span className="text-4xl">{dest.flag}</span>
+                <span className="text-2xl leading-none">{dest.flag}</span>
                 <div>
-                  <p className="text-xl font-display font-black text-white leading-none">{dest.name}</p>
-                  <p className="text-[11px] text-blue-200 mt-0.5">{dest.visa}</p>
+                  <p className="text-xs font-display font-black text-brand-charcoal leading-none">{dest.name}</p>
+                  <p className="text-[9px] text-brand-blue font-bold mt-0.5 leading-none">{dest.visa}</p>
                 </div>
               </motion.div>
             </AnimatePresence>
 
-            {/* Approval Stamp */}
+            {/* Approved Stamp */}
             <AnimatePresence>
               {stamped && (
                 <motion.div
                   key={`stamp-${activeIdx}`}
-                  initial={{ scale: 2, opacity: 0, rotate: -20 }}
-                  animate={{ scale: 1, opacity: 1, rotate: -12 }}
+                  initial={{ scale: 2.2, opacity: 0, rotate: -20 }}
+                  animate={{ scale: 1, opacity: 0.95, rotate: -10 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "backOut" }}
-                  className="absolute top-14 right-4 z-20 border-4 rounded-lg px-2 py-1 pointer-events-none"
+                  transition={{ duration: 0.3, ease: "backOut" }}
+                  className="absolute bottom-3 right-3 z-20 border-2 rounded px-2 py-0.5 pointer-events-none"
                   style={{ borderColor: "#22c55e", color: "#22c55e" }}
                 >
-                  <p className="text-[10px] font-display font-black tracking-wider">APPROVED</p>
+                  <p className="text-[8px] font-display font-black tracking-wider leading-none">APPROVED</p>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Info strip */}
-          <div className="mx-4 mb-4 rounded-2xl p-3" style={{ background: "rgba(255,255,255,0.08)" }}>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: "Processing", value: dest.time },
-                { label: "Success", value: "98%" },
-                { label: "Type", value: "Zeel Expert" },
-              ].map((item) => (
-                <div key={item.label} className="text-center">
-                  <p className="text-[10px] font-black font-display text-white leading-none">{item.value}</p>
-                  <p className="text-[8px] text-blue-300 mt-0.5">{item.label}</p>
-                </div>
-              ))}
-            </div>
+          {/* Machine Readable Footer */}
+          <div className="bg-neutral-50 border-t border-neutral-100 px-4 py-2 font-mono text-[6.5px] text-neutral-400/80 tracking-widest leading-none truncate">
+            P&lt;INDZEEL&lt;&lt;OVERSEAS&lt;&lt;{dest.name.toUpperCase()}&lt;&lt;&lt;&lt;&lt;&lt;&lt;
           </div>
-
-          {/* Machine readable zone */}
-          <div className="px-5 py-3" style={{ background: "rgba(0,0,0,0.3)" }}>
-            <p className="text-[8px] font-mono text-blue-400/70 leading-4 tracking-widest truncate">
-              P&lt;INDZEEL&lt;&lt;OVERSEAS&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
-            </p>
-            <p className="text-[8px] font-mono text-blue-400/70 leading-4 tracking-widest truncate">
-              ZL24019826&lt;1IND8502147M2812310&lt;&lt;&lt;&lt;&lt;&lt;&lt;6
-            </p>
-          </div>
-        </div>
+        </motion.div>
       </motion.div>
 
-      {/* ── FLOATING STAT CARDS ── */}
-      {/* Top-right: approved count */}
+      {/* ── FLOATING STAT CARDS (Preserved and repositioned) ── */}
+      {/* Top-Right: 2500+ Approved */}
       <motion.div
-        className="absolute top-4 right-0 bg-white/90 backdrop-blur-md border border-green-200 rounded-2xl px-3 py-2.5 shadow-lg"
+        className="absolute top-4 right-0 bg-white/95 backdrop-blur-md border border-brand-blue/10 rounded-2xl px-3 py-2.5 shadow-lg z-20"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
-        transition={{ delay: 1.5, duration: 0.5, y: { delay: 1.5, duration: 3, repeat: Infinity, ease: "easeInOut" } }}
+        transition={{ delay: 1.5, duration: 0.5, y: { delay: 1.5, duration: 3.2, repeat: Infinity, ease: "easeInOut" } }}
       >
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-green-500" />
-          <div>
+          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          <div className="text-left">
             <p className="text-xs font-black font-display text-neutral-800">2500+ Approved</p>
-            <p className="text-[9px] text-neutral-400">Visas this year</p>
+            <p className="text-[9px] text-neutral-400 font-medium">Visas this year</p>
           </div>
         </div>
       </motion.div>
 
-      {/* Bottom-left: live processing */}
+      {/* Bottom-Left: Live Processing */}
       <motion.div
-        className="absolute bottom-8 left-0 bg-white/90 backdrop-blur-md border border-blue-200 rounded-2xl px-3 py-2.5 shadow-lg"
+        className="absolute bottom-6 left-0 bg-white/95 backdrop-blur-md border border-brand-blue/10 rounded-2xl px-3 py-2.5 shadow-lg z-20"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0, y: [0, 6, 0] }}
-        transition={{ delay: 1.8, duration: 0.5, y: { delay: 1.8, duration: 3.5, repeat: Infinity, ease: "easeInOut" } }}
+        transition={{ delay: 1.8, duration: 0.5, y: { delay: 1.8, duration: 3.6, repeat: Infinity, ease: "easeInOut" } }}
       >
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-          <div>
+          <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
+          <div className="text-left">
             <p className="text-xs font-black font-display text-neutral-800">Live Processing</p>
             <AnimatePresence mode="wait">
               <motion.p
@@ -231,7 +332,7 @@ export default function HeroVisualPanel() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-[9px] text-neutral-400"
+                className="text-[9px] text-neutral-400 font-medium"
               >
                 {dest.flag} {dest.name} — {dest.visa}
               </motion.p>
@@ -240,66 +341,30 @@ export default function HeroVisualPanel() {
         </div>
       </motion.div>
 
-      {/* Bottom-right: rating */}
+      {/* Bottom-Right: rating */}
       <motion.div
-        className="absolute bottom-4 right-2 bg-white/90 backdrop-blur-md border border-amber-200 rounded-2xl px-3 py-2.5 shadow-lg"
+        className="absolute bottom-2 right-4 bg-white/95 backdrop-blur-md border border-brand-gold/20 rounded-2xl px-3.5 py-2 shadow-lg z-20"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: [0, -4, 0] }}
         transition={{ delay: 2.0, duration: 0.5, y: { delay: 2.0, duration: 4, repeat: Infinity, ease: "easeInOut" } }}
       >
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((s) => (
-            <Star key={s} className="w-3 h-3 fill-amber-400 text-amber-400" />
+            <Star key={s} className="w-3 h-3 fill-brand-gold text-brand-gold" />
           ))}
         </div>
-        <p className="text-[9px] text-neutral-500 mt-0.5 font-display font-bold">4.9 · 500+ Reviews</p>
-      </motion.div>
-
-      {/* ── DESTINATION DOTS (progress indicator) ── */}
-      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2">
-        {destinations.map((d, i) => (
-          <button
-            key={d.name}
-            onClick={() => { setActiveIdx(i); setStamped(false); setTimeout(() => setStamped(true), 600); }}
-            className="relative flex items-center justify-center w-7 h-7 rounded-full border-2 transition-all duration-300 cursor-pointer"
-            style={{
-              borderColor: i === activeIdx ? dest.color : "#e5e7eb",
-              background: i === activeIdx ? dest.bg : "white",
-            }}
-          >
-            <span className="text-sm">{d.flag}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* ── FLYING PLANE path ── */}
-      <motion.div
-        className="absolute pointer-events-none z-20"
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: [0, 1, 1, 0],
-          x: [-80, 80],
-          y: [-20, -60],
-        }}
-        transition={{
-          duration: 2.5,
-          repeat: Infinity,
-          repeatDelay: 1,
-          ease: "easeInOut",
-        }}
-      >
-        <Plane className="w-5 h-5 text-blue-500 rotate-12" />
+        <p className="text-[9px] text-neutral-500 mt-0.5 font-display font-black tracking-wide text-left">4.9 · 500+ Reviews</p>
       </motion.div>
 
       {/* ── ORIGIN PIN ── */}
       <motion.div
-        className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center z-5 pointer-events-none"
+        className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.5, duration: 0.5 }}
+        transition={{ delay: 2.2, duration: 0.5 }}
       >
-        <MapPin className="w-4 h-4 text-blue-600" />
-        <p className="text-[8px] font-display font-black text-blue-600 mt-0.5">Ahmedabad, GJ</p>
+        <MapPin className="w-4.5 h-4.5 text-brand-blue" />
+        <p className="text-[9px] font-display font-black text-brand-blue mt-0.5 tracking-wider bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm border border-brand-blue/5">Ahmedabad, GJ</p>
       </motion.div>
     </div>
   );

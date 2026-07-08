@@ -43,6 +43,10 @@ export const Preloader: React.FC = () => {
     // 3. Complete preloading
     const finishTimeout = setTimeout(() => {
       setLoading(false);
+      if (typeof window !== "undefined") {
+        (window as Window & typeof globalThis & { __preloaderFinished?: boolean }).__preloaderFinished = true;
+        window.dispatchEvent(new CustomEvent("preloaderFinished"));
+      }
     }, 2200);
 
     return () => {
@@ -54,6 +58,10 @@ export const Preloader: React.FC = () => {
 
   const handleSkip = () => {
     setLoading(false);
+    if (typeof window !== "undefined") {
+      (window as Window & typeof globalThis & { __preloaderFinished?: boolean }).__preloaderFinished = true;
+      window.dispatchEvent(new CustomEvent("preloaderFinished"));
+    }
   };
 
   return (

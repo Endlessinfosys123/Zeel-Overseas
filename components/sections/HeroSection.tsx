@@ -20,33 +20,54 @@ export const HeroSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 1.5 });
+    let ctx: ReturnType<typeof gsap.context> | undefined;
 
-      tl.to(".split-word", {
-        y: 0,
-        stagger: 0.05,
-        duration: 0.8,
-        ease: "power4.out",
-      })
-        .to(
-          ".hero-fade",
-          { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
-          "-=0.4"
-        )
-        .to(
-          ".hero-right",
-          { opacity: 1, x: 0, duration: 0.8, ease: "power2.out" },
-          "-=0.4"
-        )
-        .to(
-          ".hero-float-card",
-          { opacity: 1, y: 0, stagger: 0.15, duration: 0.6, ease: "back.out(1.4)" },
-          "-=0.4"
-        );
-    }, containerRef);
+    const startAnimations = () => {
+      ctx = gsap.context(() => {
+        const tl = gsap.timeline(); // No delay needed now as it's triggered exactly on exit
 
-    return () => ctx.revert();
+        tl.to(".split-word", {
+          y: 0,
+          stagger: 0.05,
+          duration: 0.8,
+          ease: "power4.out",
+        })
+          .to(
+            ".hero-fade",
+            { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
+            "-=0.4"
+          )
+          .to(
+            ".hero-right",
+            { opacity: 1, x: 0, duration: 0.8, ease: "power2.out" },
+            "-=0.4"
+          )
+          .to(
+            ".hero-float-card",
+            { opacity: 1, y: 0, stagger: 0.15, duration: 0.6, ease: "back.out(1.4)" },
+            "-=0.4"
+          );
+      }, containerRef);
+    };
+
+    if (typeof window !== "undefined") {
+      if ((window as Window & typeof globalThis & { __preloaderFinished?: boolean }).__preloaderFinished) {
+        startAnimations();
+      } else {
+        const handleFinished = () => {
+          startAnimations();
+        };
+        window.addEventListener("preloaderFinished", handleFinished);
+        return () => {
+          window.removeEventListener("preloaderFinished", handleFinished);
+          if (ctx) ctx.revert();
+        };
+      }
+    }
+
+    return () => {
+      if (ctx) ctx.revert();
+    };
   }, []);
 
   return (
