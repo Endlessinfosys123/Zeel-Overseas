@@ -51,13 +51,18 @@ export const Navbar: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex items-center group z-[9995]">
+          <Link 
+            href="/" 
+            className={`flex items-center group z-[9995] transition-all duration-500 rounded-xl px-3 py-1.5 ${
+              isWhiteNav 
+                ? "bg-white/90 backdrop-blur-md border border-white/20 shadow-sm" 
+                : "bg-transparent border-transparent"
+            }`}
+          >
             <img
               src="/logo.png"
               alt="Zeel Overseas Logo"
-              className={`h-10 w-auto object-contain transition-all duration-300 group-hover:scale-105 ${
-                isWhiteNav ? "brightness-0 invert" : ""
-              }`}
+              className="h-9 w-auto object-contain transition-all duration-300 group-hover:scale-105"
             />
           </Link>
 
@@ -89,17 +94,14 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Link
               href="/contact"
-              className="group relative overflow-hidden bg-brand-gold text-brand-charcoal font-display font-bold text-sm px-6 py-3 rounded-full shadow-md hover:shadow-lg transition-all duration-300 inline-flex items-center space-x-2 magnetic-target"
+              className="group relative overflow-hidden bg-brand-gold text-brand-charcoal hover:text-white font-display font-bold text-sm px-6 py-3 rounded-full shadow-md hover:shadow-lg transition-all duration-300 inline-flex items-center space-x-2 magnetic-target"
             >
-              <span className="relative z-10">Book Free Consultation</span>
-              <ArrowRight className="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1" />
-              {/* Button Hover Slide Effect */}
-              <span className="absolute inset-0 bg-brand-blue transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 -z-0" />
-              {/* Text Hover Color swap class (handled in css or using style overlay if needed, here we keep text dark but on slide it shows white for high contrast) */}
-              <span className="absolute inset-0 flex items-center justify-center text-white bg-brand-blue opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-6 py-3 rounded-full font-display font-bold text-sm space-x-2">
-                <span>Book Free Consultation</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </span>
+              {/* Background slide overlay */}
+              <span className="absolute inset-0 bg-brand-blue transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 z-0" />
+              
+              {/* Content */}
+              <span className="relative z-10 transition-colors duration-300">Book Free Consultation</span>
+              <ArrowRight className="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1 transition-colors duration-300" />
             </Link>
           </div>
 
