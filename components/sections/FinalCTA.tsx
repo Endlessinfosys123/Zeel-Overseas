@@ -58,15 +58,14 @@ export const FinalCTA: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/contact"
-            className="group relative overflow-hidden bg-brand-gold text-brand-charcoal font-display font-bold text-sm px-10 py-5 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center space-x-2 magnetic-target animate-pulse-glow"
+            className="group relative overflow-hidden bg-brand-gold text-brand-charcoal hover:text-white font-display font-bold text-sm px-10 py-5 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center space-x-2 magnetic-target animate-pulse-glow"
           >
-            <span className="relative z-10">Book Free Consultation</span>
-            <ArrowRight className="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1" />
-            <span className="absolute inset-0 bg-brand-blue transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 -z-0" />
-            <span className="absolute inset-0 flex items-center justify-center text-white bg-brand-blue opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-10 py-5 rounded-full font-display font-bold text-sm space-x-2">
-              <span>Book Free Consultation</span>
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </span>
+            {/* Background slide overlay */}
+            <span className="absolute inset-0 bg-brand-blue transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 z-0" />
+            
+            {/* Content */}
+            <span className="relative z-10 transition-colors duration-300">Book Free Consultation</span>
+            <ArrowRight className="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1 transition-colors duration-300" />
           </Link>
         </div>
       </div>
