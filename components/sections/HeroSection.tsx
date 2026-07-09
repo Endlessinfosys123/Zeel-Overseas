@@ -31,7 +31,7 @@ export const HeroSection: React.FC = () => {
 
   return (
     <section
-      className="relative h-[50vh] sm:h-[60vh] md:h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-black -mt-20 md:-mt-20"
+      className="relative aspect-[16/9] md:h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-black -mt-20"
     >
       {/* ── CINEMATIC FULL-BLEED VIDEO BACKGROUND ── */}
       <div className="absolute inset-0 overflow-hidden z-0 select-none pointer-events-none">
@@ -55,12 +55,12 @@ export const HeroSection: React.FC = () => {
         <div className="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full bg-brand-gold/10 blur-3xl z-20" />
         <div className="absolute -bottom-20 left-1/3 w-[600px] h-[280px] rounded-full bg-sky-500/10 blur-3xl z-20" />
 
-        <div className="absolute top-[18%] left-[2%] opacity-20 z-20">
+        <div className="hidden md:block absolute top-[18%] left-[2%] opacity-20 z-20">
           <FlightArcPath w={320} h={130} color="#FFFFFF" />
         </div>
 
         <motion.div
-          className="absolute z-20"
+          className="hidden md:block absolute z-20"
           style={{ top: "18%", left: "-5%" }}
           animate={{
             left: ["-5%", "105%"],
@@ -77,7 +77,7 @@ export const HeroSection: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-[10%] left-[4%] opacity-10 z-20"
+          className="hidden md:block absolute bottom-[10%] left-[4%] opacity-10 z-20"
           animate={{ rotate: 360 }}
           transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
         >
@@ -86,7 +86,7 @@ export const HeroSection: React.FC = () => {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-1 select-none pointer-events-none z-20">
+      <div className="hidden md:flex absolute bottom-10 left-1/2 transform -translate-x-1/2 flex-col items-center space-y-1 select-none pointer-events-none z-20">
         <span className="text-[10px] font-display font-bold tracking-widest text-white/50 uppercase">
           SCROLL TO EXPLORE
         </span>
