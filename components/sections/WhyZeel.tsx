@@ -39,6 +39,7 @@ const differentiators = [
 
 export const WhyZeel: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ export const WhyZeel: React.FC = () => {
         ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
-          pin: true,
+          pin: pinRef.current,
           scrub: 0.5,
           start: "top top",
           end: () => `+=${amountToScroll}`,
@@ -68,7 +69,8 @@ export const WhyZeel: React.FC = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative z-10 md:h-screen flex flex-col justify-center overflow-hidden py-20 md:py-0 bg-transparent">
+    <div ref={containerRef} className="bg-transparent">
+      <div ref={pinRef} className="relative z-10 md:h-screen flex flex-col justify-center overflow-hidden py-20 md:py-0 bg-transparent">
       {/* Globe Orbit Local Background */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden flex items-center justify-center">
         <div className="relative w-[300px] h-[300px] opacity-25">
@@ -160,6 +162,7 @@ export const WhyZeel: React.FC = () => {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
