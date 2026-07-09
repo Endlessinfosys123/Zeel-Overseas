@@ -8,6 +8,7 @@ export const Preloader: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [stampActive, setStampActive] = useState(false);
+  const [destination, setDestination] = useState("GLB");
 
   useEffect(() => {
     // Prevent scrolling while preloading
@@ -22,6 +23,10 @@ export const Preloader: React.FC = () => {
   }, [loading]);
 
   useEffect(() => {
+    // Pick random destination country code on reload
+    const countries = ["CAN", "AUS", "GBR", "DEU", "USA", "NZL"];
+    const randomCode = countries[Math.floor(Math.random() * countries.length)];
+    setDestination(randomCode);
     // 1. Increment progress counter
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -112,7 +117,7 @@ export const Preloader: React.FC = () => {
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-3xl font-display font-black text-brand-charcoal">GLB</span>
+                <span className="text-3xl font-display font-black text-brand-charcoal">{destination}</span>
                 <span className="text-[10px] text-brand-gray-dark uppercase block">DESTINATION</span>
               </div>
             </div>
