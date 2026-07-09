@@ -181,7 +181,7 @@ export const Footer: React.FC = () => {
           <div className="flex items-center space-x-1.5">
             <span>Crafted by</span>
             <a
-              href="https://quantifyre.com"
+              href="https://quantifyrellp.space"
               target="_blank"
               rel="noopener noreferrer"
               className="font-display font-black tracking-wide text-brand-charcoal hover:text-brand-blue transition-colors uppercase"
