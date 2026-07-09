@@ -31,7 +31,7 @@ export const HeroSection: React.FC = () => {
 
   return (
     <section
-      className="relative aspect-[16/9] md:h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-black -mt-20"
+      className="relative aspect-[16/9] md:h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-black mt-0 md:-mt-20"
     >
       {/* ── CINEMATIC FULL-BLEED VIDEO BACKGROUND ── */}
       <div className="absolute inset-0 overflow-hidden z-0 select-none pointer-events-none">
