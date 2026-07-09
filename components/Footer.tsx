@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Globe, Send, Instagram, Facebook, Linkedin, ArrowRight } from "lucide-react";
+import { Send, Instagram, Facebook, Linkedin, ArrowRight } from "lucide-react";
 import { servicesData } from "@/lib/data";
 
 export const Footer: React.FC = () => {
@@ -38,18 +38,12 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Column 1: Brand Info */}
           <div className="flex flex-col space-y-6">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-10 h-10 rounded-xl bg-brand-blue flex items-center justify-center transition-transform group-hover:rotate-12 duration-300">
-                <Globe className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <span className="font-display font-black text-xl tracking-tight text-brand-charcoal block">
-                  ZEEL OVERSEAS
-                </span>
-                <span className="text-[9px] uppercase tracking-widest text-brand-gold font-bold font-display block -mt-1">
-                  Immigration & Visa
-                </span>
-              </div>
+            <Link href="/" className="flex items-center group">
+              <img
+                src="/logo.png"
+                alt="Zeel Overseas Logo"
+                className="h-10 w-auto object-contain transition-all duration-300 group-hover:scale-105"
+              />
             </Link>
             <p className="text-sm text-brand-charcoal/70 leading-relaxed font-body">
               Your gateway to global education, career advancement, and permanent residency. We deliver premium, certified immigration consulting to move you across borders successfully.

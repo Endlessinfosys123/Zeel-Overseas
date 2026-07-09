@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,22 +51,14 @@ export const Navbar: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group z-[9995]">
-            <div className="w-10 h-10 rounded-xl bg-brand-blue flex items-center justify-center transition-transform group-hover:rotate-12 duration-300">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <span className={`font-display font-black text-xl tracking-tight block transition-colors duration-300 ${
-                isWhiteNav ? "text-white" : "text-brand-charcoal"
-              }`}>
-                ZEEL OVERSEAS
-              </span>
-              <span className={`text-[9px] uppercase tracking-widest font-bold font-display block -mt-1 transition-colors duration-300 ${
-                isWhiteNav ? "text-brand-gold-light" : "text-brand-gold"
-              }`}>
-                Immigration & Visa
-              </span>
-            </div>
+          <Link href="/" className="flex items-center group z-[9995]">
+            <img
+              src="/logo.png"
+              alt="Zeel Overseas Logo"
+              className={`h-10 w-auto object-contain transition-all duration-300 group-hover:scale-105 ${
+                isWhiteNav ? "brightness-0 invert" : ""
+              }`}
+            />
           </Link>
 
           {/* Desktop Navigation */}

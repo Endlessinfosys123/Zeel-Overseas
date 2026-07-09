@@ -85,8 +85,8 @@ export const Preloader: React.FC = () => {
             {/* Ticket Header */}
             <div className="flex justify-between items-start border-b border-dashed border-brand-gray-medium pb-4">
               <div>
-                <span className="text-[10px] text-brand-gray-dark uppercase tracking-widest block font-display">CARRIER</span>
-                <span className="text-sm font-bold font-display text-brand-blue">ZEEL OVERSEAS</span>
+                <span className="text-[10px] text-brand-gray-dark uppercase tracking-widest block font-display mb-1">CARRIER</span>
+                <img src="/logo.png" alt="Zeel Overseas Logo" className="h-6 w-auto object-contain" />
               </div>
               <div className="text-right">
                 <span className="text-[10px] text-brand-gray-dark uppercase tracking-widest block font-display">CLASS</span>
