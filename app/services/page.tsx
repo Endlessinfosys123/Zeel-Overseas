@@ -231,7 +231,7 @@ export default function Services() {
                 Need customized guidance?
               </h3>
               <p className="text-xs font-body text-brand-charcoal/60 leading-relaxed">
-                Book a free eligibility assessment session with one of our Ahmedabad counselors. We will evaluate your profile and build a roadmap.
+                Book a free eligibility assessment session with one of our Gandhinagar counselors. We will evaluate your profile and build a roadmap.
               </p>
               <Link
                 href="/contact"

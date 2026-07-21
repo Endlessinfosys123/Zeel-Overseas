@@ -220,7 +220,7 @@ export default function HeroVisualPanel() {
         style={{ transform: "translateZ(25px)" }}
       >
         <MapPin className="w-4.5 h-4.5 text-brand-blue" />
-        <p className="text-[9px] font-display font-black text-brand-blue mt-0.5 tracking-wider bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm border border-brand-blue/5">Ahmedabad, GJ</p>
+        <p className="text-[9px] font-display font-black text-brand-blue mt-0.5 tracking-wider bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm border border-brand-blue/5">Gandhinagar, GJ</p>
       </motion.div>
     </div>
   );

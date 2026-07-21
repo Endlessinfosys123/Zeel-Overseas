@@ -115,7 +115,7 @@ export default function About() {
               Guiding Your Journey Abroad, One Honest Step at a Time
             </p>
             <p className="text-base text-brand-charcoal/80 max-w-3xl font-body about-fade opacity-0 translate-y-4 leading-relaxed">
-              Zeel Overseas was founded with a simple belief: immigration guidance should be honest, thorough, and built around the applicant — not around volume targets. Based in Ahmedabad, we work closely with students, skilled professionals, and families across Gujarat who are ready to take the next step abroad, whether that&apos;s a university admission, a work opportunity, permanent residency, or a family visit.
+              Zeel Overseas was founded with a simple belief: immigration guidance should be honest, thorough, and built around the applicant — not around volume targets. Based in Gandhinagar, we work closely with students, skilled professionals, and families across Gujarat who are ready to take the next step abroad, whether that&apos;s a university admission, a work opportunity, permanent residency, or a family visit.
             </p>
             <p className="text-sm text-brand-charcoal/70 max-w-3xl font-body about-fade opacity-0 translate-y-4 leading-relaxed">
               We know the immigration process can feel opaque — changing embassy rules, confusing document requirements, and no shortage of consultants making promises they can&apos;t keep. Our approach is different: we assess your actual profile, tell you clearly what pathways are realistic, and then handle every piece of documentation with precision so nothing holds up your application.

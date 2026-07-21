@@ -64,7 +64,7 @@ export const IntroOverview: React.FC = () => {
               </div>
               <div>
                 <h4 className="font-display font-bold text-base text-brand-charcoal mb-1">
-                  Ahmedabad&apos;s Dedicated Visas Agency
+                  Gandhinagar&apos;s Dedicated Visas Agency
                 </h4>
                 <p className="text-xs text-brand-charcoal/60 leading-relaxed font-body">
                   Providing honest profile analysis and meticulous document verification to reduce embassy refusal risk.
@@ -79,7 +79,7 @@ export const IntroOverview: React.FC = () => {
               Moving abroad — for study, work, or a new life — is one of the biggest decisions a family makes. At Zeel Overseas, we handle the part that overwhelms most applicants: the paperwork, the deadlines, the embassy requirements that change without notice.
             </p>
             <p className="text-sm md:text-base font-body text-brand-charcoal/75 leading-relaxed intro-animate">
-              Based in Ahmedabad, we work with students, skilled professionals, and families across Gujarat who are applying for visas to Canada, the UK, Australia, Germany, the USA, and other leading destinations. Every case gets a dedicated counselor, a clear document checklist, and honest timelines — no false promises, no vague &quot;trust the process&quot; answers.
+              Based in Gandhinagar, we work with students, skilled professionals, and families across Gujarat who are applying for visas to Canada, the UK, Australia, Germany, the USA, and other leading destinations. Every case gets a dedicated counselor, a clear document checklist, and honest timelines — no false promises, no vague &quot;trust the process&quot; answers.
             </p>
 
             {/* Minor features grid */}

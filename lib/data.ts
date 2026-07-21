@@ -394,7 +394,7 @@ export const countriesData: Country[] = [
 export const milestonesData: Milestone[] = [
   {
     year: "[Year]",
-    title: "Zeel Overseas founded in Ahmedabad",
+    title: "Zeel Overseas founded in Gandhinagar",
     description: "Starting our journey to offer honest, direct immigration counseling and visa support to students and skilled workers across Gujarat."
   },
   {

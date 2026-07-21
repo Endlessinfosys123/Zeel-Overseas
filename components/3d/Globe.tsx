@@ -15,8 +15,8 @@ const destinations = [
   { name: "New Zealand", lat: -40.9006, lon: 174.8860, color: "#2563EB" },
 ];
 
-// Origin: Ahmedabad (Gujarat, India)
-const AHMEDABAD = { lat: 23.0225, lon: 72.5714 };
+// Origin: Gandhinagar (Gujarat, India)
+const GANDHINAGAR = { lat: 23.2156, lon: 72.6369 };
 const GLOBE_RADIUS = 2.5;
 
 // Helper to convert lat/lon to Cartesian coordinates
@@ -252,7 +252,7 @@ interface CameraControllerProps {
 // Controls camera position and zoom transitions dynamically for cinematic zoom sweeps
 const CameraController: React.FC<CameraControllerProps> = ({ activeIdx, progress, elapsedTime }) => {
   const { camera } = useThree();
-  const ahmedabadPos = useMemo(() => latLonToVector3(AHMEDABAD.lat, AHMEDABAD.lon, GLOBE_RADIUS), []);
+  const gandhinagarPos = useMemo(() => latLonToVector3(GANDHINAGAR.lat, GANDHINAGAR.lon, GLOBE_RADIUS), []);
   const currentLookAtRef = useRef(new THREE.Vector3(0, 0, 0));
 
   const destPos = useMemo(() => {
@@ -270,7 +270,7 @@ const CameraController: React.FC<CameraControllerProps> = ({ activeIdx, progress
       targetLookAt.set(0, 0, 0);
     } else if (elapsedTime > 1.5 && elapsedTime <= 5.0) {
       // Phase 2: Zoom in and follow the airplane flying
-      const currentRoutePos = new THREE.Vector3().lerpVectors(ahmedabadPos, destPos, progress);
+      const currentRoutePos = new THREE.Vector3().lerpVectors(gandhinagarPos, destPos, progress);
       targetLookAt.copy(currentRoutePos);
       
       const cameraDir = currentRoutePos.clone().normalize();
@@ -315,7 +315,7 @@ export const Globe: React.FC<GlobeProps> = ({
 }) => {
   const globeGroupRef = useRef<THREE.Group>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
-  const ahmedabadPos = useMemo(() => latLonToVector3(AHMEDABAD.lat, AHMEDABAD.lon, GLOBE_RADIUS), []);
+  const gandhinagarPos = useMemo(() => latLonToVector3(GANDHINAGAR.lat, GANDHINAGAR.lon, GLOBE_RADIUS), []);
 
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -350,8 +350,8 @@ export const Globe: React.FC<GlobeProps> = ({
   // Calculate target rotation to face the midpoint of the active route
   const targetRotation = useMemo(() => {
     const dest = destinations[activeIdx];
-    const midLat = (AHMEDABAD.lat + dest.lat) / 2;
-    const midLon = (AHMEDABAD.lon + dest.lon) / 2;
+    const midLat = (GANDHINAGAR.lat + dest.lat) / 2;
+    const midLon = (GANDHINAGAR.lon + dest.lon) / 2;
 
     const yRot = -midLon * (Math.PI / 180);
     const xRot = midLat * (Math.PI / 180);
@@ -429,15 +429,15 @@ export const Globe: React.FC<GlobeProps> = ({
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png"
   ]);
 
-  // Align a ring normal flat against the sphere's surface at Ahmedabad
+  // Align a ring normal flat against the sphere's surface at Gandhinagar
   const ringQuaternion = useMemo(() => {
-    const normal = ahmedabadPos.clone().normalize();
+    const normal = gandhinagarPos.clone().normalize();
     const upVector = new THREE.Vector3(0, 0, 1);
     return new THREE.Quaternion().setFromUnitVectors(upVector, normal);
-  }, [ahmedabadPos]);
+  }, [gandhinagarPos]);
 
-  // Animated pulsing glow ring around Ahmedabad
-  const AhmedabadPulse = () => {
+  // Animated pulsing glow ring around Gandhinagar
+  const GandhinagarPulse = () => {
     const ringRef = useRef<THREE.Mesh>(null);
 
     useFrame(({ clock }) => {
@@ -451,7 +451,7 @@ export const Globe: React.FC<GlobeProps> = ({
     });
 
     return (
-      <mesh ref={ringRef} position={ahmedabadPos} quaternion={ringQuaternion}>
+      <mesh ref={ringRef} position={gandhinagarPos} quaternion={ringQuaternion}>
         <ringGeometry args={[0.08, 0.18, 32]} />
         <meshBasicMaterial color="#2563EB" transparent opacity={0.8} side={THREE.DoubleSide} />
       </mesh>
@@ -593,14 +593,14 @@ export const Globe: React.FC<GlobeProps> = ({
           />
         </mesh>
 
-        {/* 4. Ahmedabad Base Pin (Globe Origin) */}
-        <mesh position={ahmedabadPos}>
+        {/* 4. Gandhinagar Base Pin (Globe Origin) */}
+        <mesh position={gandhinagarPos}>
           <sphereGeometry args={[0.11, 16, 16]} />
           <meshBasicMaterial color="#2563EB" />
         </mesh>
 
-        {/* 5. Ahmedabad Pulse Rings */}
-        <AhmedabadPulse />
+        {/* 5. Gandhinagar Pulse Rings */}
+        <GandhinagarPulse />
 
         {/* 6. Destination Pins & Animated Curved Flight Paths */}
         {destinationVectors.map((dest, idx) => (
@@ -613,7 +613,7 @@ export const Globe: React.FC<GlobeProps> = ({
 
             {/* Curved flight path with 3D Jet plane + exhaust particles */}
             <FlightPath 
-              start={ahmedabadPos} 
+              start={gandhinagarPos} 
               end={dest.vector} 
               color={dest.color} 
               isActive={idx === activeIdx}

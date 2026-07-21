@@ -130,7 +130,7 @@ export const HeroIntroSection: React.FC = () => {
           >
             <Plane className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
             <span className="text-[11px] font-display font-black tracking-wider text-blue-700 uppercase">
-              Now Boarding — Ahmedabad to the World
+              Now Boarding — Gandhinagar to the World
             </span>
           </motion.div>
 
@@ -151,7 +151,7 @@ export const HeroIntroSection: React.FC = () => {
 
           {/* Subtitle */}
           <p className="clamp-subtitle text-neutral-600 max-w-lg font-body hero-fade opacity-0 translate-y-4 leading-relaxed">
-            Navigate study visas, permanent residency, work permits, and embassy documentation with Ahmedabad&apos;s dedicated immigration consultancy. Honest advice. Complete paperwork support. Real outcomes.
+            Navigate study visas, permanent residency, work permits, and embassy documentation with Gandhinagar&apos;s dedicated immigration consultancy. Honest advice. Complete paperwork support. Real outcomes.
           </p>
 
           {/* Service Tags */}

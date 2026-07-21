@@ -95,7 +95,7 @@ export const GlobeScene: React.FC = () => {
           </div>
           <h3 className="font-display font-black text-neutral-800 text-lg">Zeel Overseas Global Routes</h3>
           <p className="text-neutral-500 text-xs max-w-[280px]">
-            Connecting Ahmedabad to top-tier global destinations including Canada, Australia, UK, USA, Germany, and New Zealand.
+            Connecting Gandhinagar to top-tier global destinations including Canada, Australia, UK, USA, Germany, and New Zealand.
           </p>
         </div>
       </div>
@@ -147,7 +147,7 @@ export const GlobeScene: React.FC = () => {
                 <div className="text-3xl filter drop-shadow-sm">{activeCountry.flag}</div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-display font-black text-neutral-900 text-base truncate">
-                    Ahmedabad → {activeCountry.name}
+                    Gandhinagar → {activeCountry.name}
                   </h4>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse" />
@@ -176,7 +176,7 @@ export const GlobeScene: React.FC = () => {
               {/* Route Map Progress Bar */}
               <div className="w-full mt-1.5">
                 <div className="flex justify-between text-[9px] font-display font-bold text-neutral-400 mb-1">
-                  <span>AHMEDABAD</span>
+                  <span>GANDHINAGAR</span>
                   <span>{activeCountry.name.toUpperCase()}</span>
                 </div>
                 <div className="w-full bg-neutral-100 h-1.5 rounded-full overflow-hidden">

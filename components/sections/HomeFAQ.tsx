@@ -16,7 +16,7 @@ const faqs = [
     answer: "Yes, completely free with no obligation."
   },
   {
-    question: "How is Zeel Overseas different from other consultants in Ahmedabad?",
+    question: "How is Zeel Overseas different from other consultants in Gandhinagar?",
     answer: "We focus on honest eligibility assessment and complete, embassy-ready documentation rather than volume-based processing — every applicant gets individual attention."
   },
   {

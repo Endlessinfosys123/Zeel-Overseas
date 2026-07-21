@@ -327,7 +327,7 @@ export default function Contact() {
           {/* Embedded Google Map (Premium Silver Light style) */}
           <div className="w-full aspect-[4/3] rounded-3xl overflow-hidden border border-brand-gray-medium/50 shadow-sm relative bg-brand-warm">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14686.070624734898!2d72.57136215!3d23.02250505!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fccd70d1102b48!2sAhmedabad%2C%20Gujarat%2C%20India!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58700.56942944322!2d72.60259837582525!3d23.21564757313386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c2b987c88b0a9%3A0xe54e602497676648!2sGandhinagar%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1716298563842!5m2!1sen!2sin"
               width="100%"
               height="100%"
               style={{ border: 0, filter: "grayscale(20%) contrast(1.1) brightness(0.95)" }}
@@ -387,8 +387,8 @@ export default function Contact() {
               a: "Yes — your first consultation with Zeel Overseas is completely free, with no obligation."
             },
             {
-              q: "Can I get a consultation online if I'm not in Ahmedabad?",
-              a: "Yes, we offer video/phone consultations for clients outside Ahmedabad and Gujarat."
+              q: "Can I get a consultation online if I'm not in Gandhinagar?",
+              a: "Yes, we offer video/phone consultations for clients outside Gandhinagar and Gujarat."
             },
             {
               q: "How quickly will someone respond to my inquiry?",
