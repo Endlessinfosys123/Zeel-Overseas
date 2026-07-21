@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 // Dynamic wrappers
 import SmoothScroll from "@/components/ui/SmoothScroll";
@@ -75,6 +76,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </SmoothScroll>
+        <Analytics />
       </body>
     </html>
   );
